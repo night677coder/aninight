@@ -1,0 +1,194 @@
+.navigationContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6), 0 -2px 8px rgba(255, 255, 255, 0.02);
+}
+
+/* Top glow line effect */
+.navigationContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 20%, 
+        rgba(255, 255, 255, 0.6) 50%, 
+        rgba(255, 255, 255, 0.3) 80%, 
+        transparent 100%
+    );
+    animation: glowSweep 3s ease-in-out infinite;
+}
+
+@keyframes glowSweep {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+@media (max-width: 768px) {
+    .navigationContainer {
+        display: block;
+    }
+}
+
+.navGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 4px;
+}
+
+.navItem {
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 4px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 64px;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.navItem::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
+}
+
+.navItem:active {
+    transform: scale(0.95);
+}
+
+.navItem:active::before {
+    opacity: 1;
+}
+
+/* Ripple effect on tap */
+.navItem::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.navItem:active::after {
+    opacity: 1;
+    transform: scale(1);
+    transition: transform 0s, opacity 0s;
+}
+
+.navItem.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.iconWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+}
+
+.icon {
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    position: relative;
+    z-index: 2;
+}
+
+.navItem.active .icon {
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6));
+    transform: scale(1.1);
+}
+
+.activeGlow {
+    position: absolute;
+    inset: -8px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+    animation: glowPulse 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.text {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.navItem.active .text {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    font-weight: 700;
+}
+
+/* Extra small screens */
+@media (max-width: 380px) {
+    .navGrid {
+        gap: 2px;
+        padding: 0 2px;
+    }
+    
+    .navItem {
+        padding: 8px 2px;
+        min-height: 60px;
+        gap: 4px;
+    }
+    
+    .icon {
+        font-size: 1.1rem;
+    }
+    
+    .text {
+        font-size: 0.65rem;
+    }
+    
+    .iconWrapper {
+        width: 24px;
+        height: 24px;
+    }
+}

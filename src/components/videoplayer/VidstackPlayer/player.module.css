@@ -1,0 +1,191 @@
+.player {
+  --media-brand: #ffffff;
+  --media-focus-ring-color: var(--primary-color);
+  --media-focus-ring: 0 0 0 2px var(--media-focus-ring-color), 0 0 20px rgba(157, 78, 221, 0.5);
+  --media-border-radius: 16px;
+  --media-tooltip-y-offset: 30px;
+  --media-menu-y-offset: 30px;
+
+  aspect-ratio: 16 /9;
+  border-radius: var(--media-border-radius);
+  color: #ffffff;
+  contain: layout;
+  font-family: sans-serif;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(157, 78, 221, 0.3);
+  transition: all 0.3s ease;
+}
+
+.player[data-focus]:not([data-playing]) {
+  box-shadow: var(--media-focus-ring);
+}
+
+.player::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
+  background-size: 400% 400%;
+  animation: border-flow 4s linear infinite;
+  border-radius: calc(var(--media-border-radius) + 2px);
+  z-index: -1;
+  opacity: 0.7;
+  filter: blur(5px);
+}
+
+.player::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--media-border-radius);
+  background: radial-gradient(circle at top right, rgba(0, 245, 212, 0.1), transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.player video,
+.poster {
+  border-radius: var(--media-border-radius);
+  filter: contrast(1.05) saturate(1.1);
+  z-index: 0;
+}
+
+.poster {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+
+.poster[data-visible] {
+  opacity: 1;
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  filter: contrast(1.1) saturate(1.2);
+  transition: transform 0.5s ease;
+}
+
+/* Custom control styling */
+.controlGroup {
+  --control-group-bg: rgba(10, 10, 20, 0.7);
+  --control-group-backdrop: blur(10px);
+  --control-group-radius: 12px;
+  --control-group-margin: 0 8px;
+  --control-group-padding: 6px;
+  --control-group-border: 1px solid rgba(157, 78, 221, 0.2);
+  --control-group-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  --control-group-transition: all 0.3s ease;
+}
+
+.controlGroupHover {
+  --control-group-hover-bg: rgba(10, 10, 20, 0.8);
+  --control-group-hover-border: 1px solid rgba(157, 78, 221, 0.4);
+  --control-group-hover-shadow: 0 5px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(157, 78, 221, 0.3);
+}
+
+.timeSlider {
+  --time-slider-track-height: 6px;
+  --time-slider-thumb-size: 16px;
+  --time-slider-track-color: rgba(157, 78, 221, 0.3);
+  --time-slider-track-fill: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  --time-slider-thumb-color: var(--secondary-color);
+  --time-slider-value-color: white;
+}
+
+.timeSliderHover {
+  --time-slider-hover-track-height: 8px;
+  --time-slider-hover-thumb-size: 18px;
+}
+
+.sliderThumb {
+  --slider-thumb-shadow: 0 0 10px var(--secondary-color);
+  --slider-thumb-transition: all 0.2s ease;
+}
+
+.sliderThumbHover {
+  --slider-thumb-hover-shadow: 0 0 15px var(--secondary-color);
+}
+
+.controls {
+  --controls-padding: 16px;
+  --controls-background: linear-gradient(to top, rgba(10, 10, 20, 0.8), transparent);
+}
+
+.button {
+  --button-icon-size: 28px;
+  --button-transition: all 0.2s ease;
+}
+
+.buttonHover {
+  --button-hover-icon-size: 30px;
+  --button-hover-filter: drop-shadow(0 0 5px var(--primary-color));
+  --button-hover-transform: scale(1.1);
+}
+
+.playButton {
+  --play-button-icon-size: 36px;
+}
+
+.playButtonHover {
+  --play-button-hover-icon-size: 40px;
+  --play-button-hover-filter: drop-shadow(0 0 8px var(--primary-color));
+}
+
+.timeGroup {
+  --time-group-font-weight: 600;
+  --time-group-text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.volumeSlider {
+  --volume-slider-track-color: rgba(0, 245, 212, 0.3);
+  --volume-slider-track-fill-color: var(--secondary-color);
+  --volume-slider-thumb-color: var(--secondary-color);
+}
+
+/* Title bar styling */
+.titleBar {
+  --title-bar-background: linear-gradient(to bottom, rgba(10, 10, 20, 0.8), transparent);
+  --title-bar-padding: 16px;
+}
+
+.title {
+  --title-font-weight: 700;
+  --title-font-size: 1.1rem;
+  --title-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --title-letter-spacing: 0.02em;
+}
+
+/* Settings menu styling */
+.menu {
+  --menu-background: rgba(10, 10, 20, 0.9);
+  --menu-backdrop-filter: blur(15px);
+  --menu-border: 1px solid rgba(157, 78, 221, 0.3);
+  --menu-border-radius: 16px;
+  --menu-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(157, 78, 221, 0.2);
+  --menu-overflow: hidden;
+}
+
+.menuButtonHover {
+  --menu-button-hover-background: rgba(157, 78, 221, 0.2);
+}
+
+.menuButtonChecked {
+  --menu-button-checked-background: rgba(0, 245, 212, 0.2);
+}
+
+.checkIcon {
+  --check-icon-color: var(--secondary-color);
+  --check-icon-filter: drop-shadow(0 0 5px var(--secondary-color));
+}

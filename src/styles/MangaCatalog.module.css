@@ -1,0 +1,58 @@
+/* Manga Catalog - Prevent Horizontal Scrolling */
+.mangaCatalogContainer {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    position: relative;
+}
+
+.mangaCatalogContent {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Ensure all child elements don't overflow */
+.mangaCatalogContainer * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix for large text on mobile */
+@media (max-width: 640px) {
+    .mangaCatalogContainer h1 {
+        font-size: clamp(1.3rem, 8vw, 3rem) !important;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    
+    .mangaCatalogContainer .inline-block {
+        max-width: 100%;
+        overflow: hidden;
+    }
+}
+
+/* Ensure genre buttons don't cause overflow */
+.genreContainer {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.genreButtons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    padding: 0 1rem;
+}
+
+/* Fix for search bar on mobile */
+@media (max-width: 768px) {
+    .searchContainer {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
