@@ -160,16 +160,22 @@ function EnhancedEpisodeList({ id, data, onprovider, setwatchepdata, epnum }) {
 
     let filteredEpisodes;
 
-    if (provider.consumet === true) {
+    // Check if episodes is an object with sub/dub properties or a flat array
+    const hasSubDubStructure = provider.episodes && typeof provider.episodes === 'object' && 
+                                (provider.episodes.sub || provider.episodes.dub);
+    
+    if (hasSubDubStructure) {
+      // Handle sub/dub structure (both consumet and non-consumet providers)
       filteredEpisodes = subtype === 'sub' ? provider.episodes?.sub : provider.episodes?.dub;
     } else {
+      // Handle flat array (legacy format)
       filteredEpisodes = subtype === 'dub'
         ? provider.episodes?.slice(0, dubCount)
         : provider.episodes;
     }
 
     // Handle sorting direction
-    if (filteredEpisodes) {
+    if (filteredEpisodes && Array.isArray(filteredEpisodes)) {
       const sortedEpisodes = [...filteredEpisodes];
       if (sortDirection === 'desc') {
         sortedEpisodes.reverse();

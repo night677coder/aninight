@@ -1,4 +1,4 @@
-const ANIMEPAHE_BASE_URL = 'https://animepahe-api-iota.vercel.app';
+const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
 
 /**
  * Get AniList data for matching

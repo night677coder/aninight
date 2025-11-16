@@ -1,5 +1,5 @@
 // Kyomu API Integration
-const KYOMU_API = 'https://animepahe-api-iota.vercel.app/api';
+const KYOMU_API = `${process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app'}/api`;
 
 /**
  * Search anime on Kyomu using AniList title

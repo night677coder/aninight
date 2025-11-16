@@ -129,7 +129,7 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
 
 async function AnimePaheEpisode(animeSession, episodeSession, subtype) {
   try {
-    const ANIMEPAHE_BASE_URL = 'https://animepahe-api-iota.vercel.app';
+    const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
     const EXTERNAL_PROXY = 'https://m8u3.thevoidborn001.workers.dev';
     
     const isDubRequested = subtype?.toLowerCase() === 'dub';

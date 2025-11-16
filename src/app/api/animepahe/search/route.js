@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const ANIMEPAHE_BASE_URL = 'https://animepahe-api-iota.vercel.app';
+const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
 
 export async function GET(request) {
   try {

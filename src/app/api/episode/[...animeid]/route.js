@@ -138,7 +138,10 @@ export const GET = async (req, { params }) => {
             providers.push({
               consumet: false,
               providerId: "animepahe",
-              episodes: episodes,
+              episodes: {
+                sub: episodes,
+                dub: [], // AnimePahe doesn't separate dub/sub in episode list
+              },
             });
           }
         }
