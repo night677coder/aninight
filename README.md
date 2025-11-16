@@ -63,28 +63,18 @@
 
 <div align="center">
 
-### 🏠 Home Page
+### 🏠 UI Preview
 ![Home](./public/preview/Screenshot%202025-11-16%20155613.png)
-
-### 📖 Anime Details & Information
 ![Details 1](./public/preview/Screenshot%202025-11-16%20161845.png)
 ![Details 2](./public/preview/Screenshot%202025-11-16%20161853.png)
-
-### 🎬 Advanced Player Interface
 ![Player 1](./public/preview/Screenshot%202025-11-16%20161909.png)
 ![Player 2](./public/preview/Screenshot%202025-11-16%20161920.png)
 ![Player 3](./public/preview/Screenshot%202025-11-16%20161930.png)
-
-### 🔍 Search & Browse Features
 ![Search 1](./public/preview/Screenshot%202025-11-16%20162158.png)
 ![Search 2](./public/preview/Screenshot%202025-11-16%20162208.png)
-
-### 👤 User Features & Tracking
 ![Features 1](./public/preview/Screenshot%202025-11-16%20162506.png)
 ![Features 2](./public/preview/Screenshot%202025-11-16%20162525.png)
 ![Features 3](./public/preview/Screenshot%202025-11-16%20162543.png)
-
-### ⚙️ Settings & User Profile
 ![Settings 1](./public/preview/Screenshot%202025-11-16%20162558.png)
 ![Settings 2](./public/preview/Screenshot%202025-11-16%20162612.png)
 ![Settings 3](./public/preview/Screenshot%202025-11-16%20162626.png)
@@ -404,7 +394,7 @@ vercel
 ### Created By
 
 **Rishab** (VoidBorn)
-- GitHub: [@voidborn](https://github.com/voidborn)
+- GitHub: [@voidbornfr](https://github.com/voidbornfr)
 - Project: VoidAnime
 
 ### If You Use This Project
@@ -412,7 +402,7 @@ vercel
 Please provide proper attribution:
 
 ```markdown
-Built with [VoidAnime](https://github.com/voidborn/voidanime) by Rishab (VoidBorn)
+Built with [VoidAnime](https://github.com/voidbornfr/voidanime) by Rishab (VoidBorn)
 ```
 
 Or in your code:
@@ -505,7 +495,7 @@ Contributions are welcome! Please feel free to submit issues and pull requests.
 
 If you encounter any issues or have questions:
 
-1. Check existing [Issues](https://github.com/voidborn/voidanime/issues)
+1. Check existing [Issues](https://github.com/voidbornfr/voidanime/issues)
 2. Create a new issue with detailed description
 3. Include error logs and environment details
 
