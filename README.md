@@ -64,7 +64,6 @@
 <div align="center">
 
 ### 🏠 UI Preview
-![Home](./public/preview/Screenshot%202025-11-16%20155613.png)
 ![Details 1](./public/preview/Screenshot%202025-11-16%20161845.png)
 ![Details 2](./public/preview/Screenshot%202025-11-16%20161853.png)
 ![Player 1](./public/preview/Screenshot%202025-11-16%20161909.png)
