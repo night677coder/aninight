@@ -8,7 +8,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-Development-yellow.svg)
 
-**Made with ❤️ by [Rishab](https://github.com/voidborn) (VoidBorn)**
+**Made with ❤️ by [Rishab](https://github.com/voidbornfr) (VoidBorn)**
 
 </div>
 
