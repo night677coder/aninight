@@ -25,7 +25,9 @@ async function page() {
 
   return (
     <div className='min-h-screen bg-black'>
-      
+      <div className="relative w-full">
+        {user?.bannerImage ? (
+          <div className="relative w-full">
             <Image
               src={user.bannerImage}
               alt="image"
