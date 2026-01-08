@@ -1,20 +1,20 @@
 import React from 'react';
 import { fetchNewsAnilist } from '@/lib/AnilistNewsFunctions';
-import Navbarcomponent from '@/components/navbar/Navbar';
+
 import { getAuthSession } from '@/app/api/auth/[...nextauth]/route';
 import NetflixStyleNewsPage from './NetflixStyleNewsPage';
 import axios from 'axios';
 import { headers } from 'next/headers'
 
 export async function generateMetadata() {
-  let title = 'Anime News - VoidAnime';
+  let title = 'Anime News - AniNight';
   let description = 'Get the latest anime news about your favorite series';
   
   return {
-    title: 'Anime News - VoidAnime',
+    title: 'Anime News - AniNight',
     description: description,
     openGraph: {
-      title: 'Anime News - VoidAnime',
+      title: 'Anime News - AniNight',
       description: description,
     },
   }
@@ -43,8 +43,7 @@ export default async function NewsPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbarcomponent />
-      <div className="mt-[70px]">
+      
         <NetflixStyleNewsPage initialData={newsData} />
       </div>
     </div>

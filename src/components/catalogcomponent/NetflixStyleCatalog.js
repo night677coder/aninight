@@ -15,6 +15,8 @@ import {
   faTrash,
   faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import GoogleAdSense from '@/components/ads/GoogleAdSense';
 
 function NetflixStyleCatalog({ searchParams }) {
   const { year, season, format, genre, search, sortby } = searchParams;
@@ -26,6 +28,7 @@ function NetflixStyleCatalog({ searchParams }) {
   const [sortbyvalue, setSortbyvalue] = useState(null);
   const [searchvalue, setSearchvalue] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Banner image for the catalog page
   const bannerImage = "https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg";
@@ -39,7 +42,16 @@ function NetflixStyleCatalog({ searchParams }) {
     setSearchvalue(search || "");
   }, [year, season, format, genre, search, sortby]);
 
+  const handleSearch = () => {
+    setIsLoading(true);
+    // Simulate fast search with minimal delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+  };
+
   const resetValues = () => {
+    setIsLoading(true);
     setSelectedYear(null);
     setSeasonvalue(null);
     setFormatvalue(null);
@@ -47,6 +59,9 @@ function NetflixStyleCatalog({ searchParams }) {
     setQuery('');
     setSortbyvalue(null);
     setSearchvalue("");
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 200);
   };
 
   const handleYearClick = (yearId) => {
@@ -110,6 +125,11 @@ function NetflixStyleCatalog({ searchParams }) {
                   placeholder="Search Anime"
                   value={searchvalue}
                   onValueChange={setSearchvalue}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
                   isClearable
                   autoComplete="off"
                   classNames={{
@@ -118,6 +138,16 @@ function NetflixStyleCatalog({ searchParams }) {
                   }}
                   startContent={
                     <FontAwesomeIcon icon={faSearch} className="text-[#999]" />
+                  }
+                  endContent={
+                    isLoading && (
+                      <div className="animate-spin">
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0112 20c5.159 0 9.829-2.084 9.829-5.291V12c0-3.207-4.67-5.291-9.829-5.291z"/>
+                        </svg>
+                      </div>
+                    )
                   }
                 />
               </div>
@@ -142,6 +172,13 @@ function NetflixStyleCatalog({ searchParams }) {
           </div>
         </div>
       </div>
+
+      {/* AdSense Banner */}
+      <GoogleAdSense 
+        adSlot="1234567890"
+        adFormat="banner"
+        className="my-4"
+      />
 
       {/* Filter Section - Netflix style */}
       {showFilters && (
@@ -341,18 +378,37 @@ function NetflixStyleCatalog({ searchParams }) {
       )}
 
       {/* Results Section - Netflix style */}
-      <div className="px-4 sm:px-8 md:px-12 py-8 bg-black">
-        <h2 className="text-xl sm:text-2xl font-medium text-white mb-6 sm:mb-8 border-l-4 border-white pl-4">
-          {searchvalue ? `Search Results for "${searchvalue}"` : "Browse Anime"}
-        </h2>
-        <NetflixStyleSearchcard 
-          searchvalue={searchvalue} 
-          seasonvalue={seasonvalue}
-          selectedYear={selectedYear} 
-          formatvalue={formatvalue}
-          sortbyvalue={sortbyvalue} 
-          genrevalue={genrevalue} 
-        />
+      <div className="px-4 sm:px-8 md:px-12 py-8 bg-black relative">
+        {isLoading && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
+            <LoadingSpinner size="lg" />
+          </div>
+        )}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* AdSense Sidebar */}
+          <div className="hidden lg:block">
+            <GoogleAdSense 
+              adSlot="2345678901"
+              adFormat="vertical"
+              className="sticky top-4"
+            />
+          </div>
+          
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <h2 className="text-xl sm:text-2xl font-medium text-white mb-6 sm:mb-8 border-l-4 border-white pl-4">
+              {searchvalue ? `Search Results for "${searchvalue}"` : "Browse Anime"}
+            </h2>
+            <NetflixStyleSearchcard 
+              searchvalue={searchvalue} 
+              seasonvalue={seasonvalue}
+              selectedYear={selectedYear} 
+              formatvalue={formatvalue}
+              sortbyvalue={sortbyvalue} 
+              genrevalue={genrevalue} 
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

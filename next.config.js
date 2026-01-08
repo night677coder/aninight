@@ -37,6 +37,33 @@ const nextConfig = {
                     { key: "Access-Control-Allow-Origin", value: "*" }, // replace this your actual origin
                     { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT" },
                     { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
+                    // Security Headers
+                    { key: "X-Content-Type-Options", value: "nosniff" },
+                    { key: "X-Frame-Options", value: "DENY" },
+                    { key: "X-XSS-Protection", value: "1; mode=block" },
+                    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+                    { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+                    { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+                ]
+            },
+            {
+                source: '/(.*)',
+                headers: [
+                    // Content Security Policy
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.gstatic.com https://www.youtube.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https: https://i.ytimg.com https://s4.anilist.co https://images.unsplash.com; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests"
+                    },
+                    // Security Headers
+                    { key: "X-Content-Type-Options", value: "nosniff" },
+                    { key: "X-Frame-Options", value: "DENY" },
+                    { key: "X-XSS-Protection", value: "1; mode=block" },
+                    { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+                    { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+                    { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+                    // Performance Headers
+                    { key: "X-DNS-Prefetch-Control", value: "on" },
+                    { key: "X-Download-Options", value: "noopen" },
                 ]
             }
         ]
@@ -50,7 +77,8 @@ const nextConfig = {
     },
     // Show detailed error messages in production
     reactStrictMode: true,
-    productionBrowserSourceMaps: true,
+    productionBrowserSourceMaps: false, // Changed to false for security
+    poweredByHeader: false,
     // Webpack configuration to handle Consumet library
     webpack: (config, { isServer }) => {
       // Exclude problematic packages from webpack processing

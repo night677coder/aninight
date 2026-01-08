@@ -5,7 +5,7 @@ import React from 'react'
 function page() {
     return (
         <div>
-            <Navbarcomponent home={false} />
+            
             <SettingsPage/>
         </div>
     )

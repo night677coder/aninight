@@ -1,14 +1,15 @@
 import React from 'react';
 import { getPopularManga } from '@/lib/MangaFunctions';
-import Navbarcomponent from '@/components/navbar/Navbar';
+
 import MangaCard from '@/components/CardComponent/MangaCard';
+import Footer from '@/components/Footer';
 
 export const metadata = {
   title: 'Popular Manga - Top Rated Manga Series',
   description: 'Browse the most popular and top-rated manga titles. Read trending manga online free with high-quality images.',
   keywords: 'popular manga, top manga, best manga, trending manga, top rated manga, manga rankings, read manga online',
   openGraph: {
-    title: 'Popular Manga - Top Rated Manga Series | VoidAnime',
+    title: 'Popular Manga - Top Rated Manga Series | AniNight',
     description: 'Browse the most popular and top-rated manga titles. Read trending manga online free.',
     type: 'website',
     url: 'https://voidanime.live/manga/popular',
@@ -28,9 +29,7 @@ async function PopularMangaPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Navbarcomponent />
-      <div className="pt-[90px] max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">
+      
           Popular Manga
         </h1>
 

@@ -8,9 +8,9 @@ function NotFound() {
     const router = useRouter();
     return (
         <div className='h-[100vh]'>
-            <Navbarcomponent home={true} />
-            <div className='flex items-center flex-col justify-center h-full'>
-                <div className='text-[25px] font-semibold'>
+            <Navbarcomponent />
+            <div className='flex flex-col items-center justify-center h-full'>
+                <div className='text-[50px] font-bold text-white'>
                     Ooopsie!
                 </div>
                 <div className='!max-w-[750px] !max-h-[300px] px-3 mt-5 mb-6'>

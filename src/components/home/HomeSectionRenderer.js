@@ -3,7 +3,6 @@ import { useSettings } from '@/lib/store';
 import { useStore } from 'zustand';
 import ContinueWatching from '@/components/home/ContinueWatching';
 import ContinueReading from '@/components/home/ContinueReading';
-import HomeNewsCard from '@/components/home/HomeNewsCard';
 import UpcomingAnimeSection from '@/components/home/UpcomingAnimeSection';
 import CurrentlyAiringSection from '@/components/home/CurrentlyAiringSection';
 import TopRatedSection from '@/components/home/TopRatedSection';
@@ -45,7 +44,6 @@ export default function HomeSectionRenderer({
         currentlyAiring: <CurrentlyAiringSection animeList={airingData} />,
         premiumShowcase: <PremiumShowcaseSection animeList={herodata} title="Premium Collection" />,
         popularManga: <PopularMangaSection mangaList={popularMangaData} />,
-        news: <HomeNewsCard newsItems={newsData?.news} />,
         topRated: <TopRatedSection animeList={topRatedData} />,
         randomRecs: <RandomRecommendationsSection animeList={randomRecsData} />,
         upcoming: <UpcomingAnimeSection animeList={upcomingData} />,
@@ -55,8 +53,32 @@ export default function HomeSectionRenderer({
 
     return (
         <>
+            {/* Render hero section manually */}
+            <MotionDiv
+                initial={{ y: 10, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+            >
+                <TrendingNowSection animeList={herodata} />
+            </MotionDiv>
+
+            {/* Place promo banner between hero and trending now */}
+            <MotionDiv
+                initial={{ y: 10, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+            >
+                <PromoBanner />
+            </MotionDiv>
+
+            {/* Render other sections based on settings */}
             {homeSections.map((section, index) => {
                 if (!section.enabled || !sectionComponents[section.id]) return null;
+                
+                // Skip promoBanner and trendingNow as they're already rendered
+                if (section.id === 'promoBanner' || section.id === 'trendingNow') return null;
                 
                 return (
                     <MotionDiv

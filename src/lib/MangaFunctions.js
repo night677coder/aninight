@@ -1,5 +1,7 @@
 "use server"
 
+import { TRENDING_DESC, SCORE_DESC, POPULARITY_DESC, UPDATED_AT_DESC, ANIME, MANGA, SEARCH_MATCH } from './anilistqueries';
+
 const MANGAPILL_BASE_URL = "https://consumet-six-alpha.vercel.app/manga/mangapill";
 const MANGAHERE_BASE_URL = "https://consumet-six-alpha.vercel.app/manga/mangahere";
 

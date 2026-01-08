@@ -134,8 +134,8 @@ async function Home() {
   const websiteJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'VoidAnime',
-    alternateName: 'Void Anime',
+    name: 'AniNight',
+    alternateName: 'Ani Night',
     url: 'https://voidanime.live',
     description: 'Watch anime online and read manga free. Stream the latest anime episodes with English subtitles and dubs. Discover trending anime, popular manga, and seasonal releases.',
     potentialAction: {
@@ -148,7 +148,7 @@ async function Home() {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'VoidAnime',
+      name: 'AniNight',
       logo: {
         '@type': 'ImageObject',
         url: 'https://voidanime.live/android-chrome-512x512.png'
@@ -157,14 +157,14 @@ async function Home() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-black">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <Navbarcomponent home={true} />
       <Herosection data={herodata} />
-      <div className='sm:max-w-[97%] md:max-w-[95%] lg:max-w-[90%] xl:max-w-[85%] mx-auto flex flex-col md:gap-11 sm:gap-7 gap-5 mt-8'>
+      <div className='w-full max-w-full sm:max-w-[97%] md:max-w-[95%] lg:max-w-[90%] xl:max-w-[85%] mx-auto flex flex-col md:gap-11 sm:gap-7 gap-6 mt-0 sm:mt-8 px-4 sm:px-6'>
         <HomeSectionRenderer 
           session={session}
           herodata={herodata}

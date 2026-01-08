@@ -2,8 +2,8 @@ export default function WebsiteJsonLd() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'VoidAnime',
-    alternateName: 'Void Anime',
+    name: 'AniNight',
+    alternateName: 'Ani Night',
     url: 'https://voidanime.live',
     description: 'Watch anime online and read manga free. Stream the latest anime episodes with English subtitles and dubs. Discover trending anime, popular manga, and seasonal releases.',
     potentialAction: {
@@ -16,7 +16,7 @@ export default function WebsiteJsonLd() {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'VoidAnime',
+      name: 'AniNight',
       logo: {
         '@type': 'ImageObject',
         url: 'https://voidanime.live/android-chrome-512x512.png'

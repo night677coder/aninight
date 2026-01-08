@@ -77,7 +77,7 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           className={styles.section}
         >
-          <h2 className={styles.sectionTitle}>Why Choose VoidAnime</h2>
+          <h2 className={styles.sectionTitle}>Why Choose AniNight</h2>
           <div className={styles.featuresGrid}>
             {features.map((feature, index) => (
               <motion.div

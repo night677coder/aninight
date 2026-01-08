@@ -2,9 +2,22 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from '@nextui-org/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 function MobileNavButton() {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -39,8 +52,14 @@ function MobileNavButton() {
           base: "rounded-md data-[hover=true]:bg-[#1a365d]/20 data-[hover=true]:text-white"
         }}
       >
+        <DropdownItem key="back" textValue="Back" onClick={handleBack}>
+          <div className="text-white no-underline py-2 font-medium flex items-center gap-2 cursor-pointer">
+            <FontAwesomeIcon icon={faArrowLeft} width="18" height="18" />
+            Back
+          </div>
+        </DropdownItem>
         <DropdownItem key="browse" textValue="Browse">
-          <Link href="/anime/catalog" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/anime/catalog" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21 4H3C1.89543 4 1 4.89543 1 6V18C1 19.1046 1.89543 20 3 20H21C22.1046 20 23 19.1046 23 18V6C23 4.89543 22.1046 4 21 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M1 10H23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -49,7 +68,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="trending" textValue="Trending">
-          <Link href="/anime/catalog?sortby=TRENDING_DESC" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/anime/catalog?sortby=TRENDING_DESC" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M13 7L21 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M3 7L9 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -62,7 +81,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="movies" textValue="Movies">
-          <Link href="/anime/catalog?format=MOVIE" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/anime/catalog?format=MOVIE" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 8V16M20 8V16M1 3L23 3V21L1 21L1 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M7 3L7 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -72,7 +91,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="tvshows" textValue="TV Shows">
-          <Link href="/anime/catalog?format=TV" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/anime/catalog?format=TV" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="2" y="5" width="20" height="15" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M8 2L16 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -81,7 +100,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="news" textValue="News">
-          <Link href="/news" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/news" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M7 7H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -92,7 +111,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="images" textValue="Images">
-          <Link href="/images" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/images" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21 3H3C1.89543 3 1 3.89543 1 5V19C1 20.1046 1.89543 21 3 21H21C22.1046 21 23 20.1046 23 19V5C23 3.89543 22.1046 3 21 3Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M9 10C10.1046 10 11 9.10457 11 8C11 6.89543 10.1046 6 9 6C7.89543 6 7 6.89543 7 8C7 9.10457 7.89543 10 9 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -103,7 +122,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="about" textValue="About">
-          <Link href="/about" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/about" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -113,7 +132,7 @@ function MobileNavButton() {
           </Link>
         </DropdownItem>
         <DropdownItem key="settings" textValue="Settings">
-          <Link href="/settings" className="text-white no-underline block py-2 font-medium flex items-center gap-2">
+          <Link href="/settings" className="text-white no-underline py-2 font-medium flex items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M19.4 15C19.1277 15.8031 19.2583 16.6718 19.7611 17.37C20.2639 17.9281 21.0781 18.2548 21.9 18.24C21.9 19.86 21.9 21.48 21.9 23.1C20.9 23.1 19.9 23.1 18.9 23.1C18.9 22.2 18.9 21.3 18.9 20.4C18.0781 20.4148 17.2639 20.0881 16.7611 19.53C16.2583 18.9718 16.1277 18.1031 16.4 17.3L19.4 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

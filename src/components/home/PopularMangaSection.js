@@ -21,10 +21,6 @@ function PopularMangaSection({ mangaList }) {
             <span>Trending</span>
           </div>
         </div>
-        <Link href="/manga/catalog" className="flex items-center gap-1 text-sm text-white hover:opacity-70 transition-opacity">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="overflow-x-auto overflow-y-hidden scrollbar-none px-2">

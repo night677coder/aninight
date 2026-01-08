@@ -8,7 +8,7 @@ import {
 } from '@/lib/Anilistfunctions';
 import { getPopularManga, getTrendingManga } from '@/lib/MangaFunctions';
 
-const BASE_URL = 'https://voidanime.live';
+const BASE_URL = 'https://night677coder.github.io/aninight';
 
 export default async function sitemap() {
   try {

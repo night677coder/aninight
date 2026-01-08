@@ -272,12 +272,12 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
         <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-12 z-20 flex flex-col items-start">
           {/* Title and metadata */}
           <div className="max-w-full md:max-w-3xl">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4" style={{ fontSize: '14px' }}>
               {title}
             </h1>
             
             {/* Netflix-style metadata row */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#ddd] mb-2 sm:mb-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#ddd] mb-2 sm:mb-4" style={{ fontSize: '10px' }}>
               <span className="text-white font-medium">{info.tvInfo.showType}</span>
               {info.tvInfo.year && <span>{info.tvInfo.year}</span>}
               {info.tvInfo.quality && <span className="border border-[#555] px-1">{info.tvInfo.quality}</span>}
@@ -287,13 +287,14 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
             
             {/* Description */}
             {info.Overview && (
-              <p className="text-[#ddd] text-sm md:text-base mb-3 sm:mb-6 max-w-full md:max-w-2xl leading-relaxed">
+              <p className="text-[#ddd] text-sm md:text-base mb-3 sm:mb-6 max-w-full md:max-w-2xl leading-relaxed" style={{ fontSize: '10px' }}>
                 {isFull ? info.Overview : `${info.Overview.slice(0, 120)}...`}
                 <button
                   className="text-[#ddd] font-medium ml-2 transition duration-300 hover:text-white"
                   onClick={() => setIsFull(!isFull)}
+                  style={{ fontSize: '10px' }}
                 >
-                  {isFull ? "less" : "more"}
+                  {isFull ? 'Show less' : 'Read more'}
                 </button>
               </p>
             )}

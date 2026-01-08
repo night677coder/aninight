@@ -1,3 +1,12 @@
+export const TRENDING_DESC = "TRENDING_DESC";
+export const SCORE_DESC = "SCORE_DESC";
+export const POPULARITY_DESC = "POPULARITY_DESC";
+export const SEARCH_MATCH = "SEARCH_MATCH";
+export const UPDATED_AT_DESC = "UPDATED_AT_DESC";
+
+export const ANIME = "ANIME";
+export const MANGA = "MANGA";
+
 export const trending = `
 query($perPage: Int, $page: Int) {
     Page(page: $page, perPage: $perPage) {

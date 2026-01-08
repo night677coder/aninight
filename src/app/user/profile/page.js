@@ -25,10 +25,7 @@ async function page() {
 
   return (
     <div className='min-h-screen bg-black'>
-      <Navbarcomponent home={true} />
-      <div className='relative'>
-        {user.bannerImage ? (
-          <div className="relative w-full brightness-50">
+      
             <Image
               src={user.bannerImage}
               alt="image"

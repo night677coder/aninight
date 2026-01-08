@@ -28,10 +28,6 @@ function TrendingNowSection({ animeList }) {
             <span>Hot</span>
           </div>
         </div>
-        <Link href="/anime/catalog?sort=TRENDING_DESC" className={styles.viewAll}>
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} />
-        </Link>
       </div>
 
       <div className={styles.scrollContainer}>

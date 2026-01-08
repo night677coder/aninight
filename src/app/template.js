@@ -11,10 +11,13 @@ export default function Template({children}){
             {/* <AnimatePresence mode={'wait'} initial={false}> */}
                 <motion.div 
                     key={pathname}
-                    initial={{ opacity: 0, y: 0 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    // exit={{ opacity: 0, y: 0 }}
-                    // transition={{ delay: 0.05 }}
+                    transition={{ 
+                        duration: 0.3,
+                        ease: "easeOut"
+                    }}
+                    className="min-h-screen"
                 >
                     {/* Completing page exit animation and load new page */}
                         {children}

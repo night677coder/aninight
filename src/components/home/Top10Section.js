@@ -37,10 +37,6 @@ function Top10Section({ animeList }) {
             <span>Best of the Best</span>
           </div>
         </div>
-        <Link href="/anime/catalog?sort=SCORE_DESC" className={styles.viewAll}>
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} />
-        </Link>
       </div>
 
       <div className={styles.scrollContainer}>

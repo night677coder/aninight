@@ -16,13 +16,13 @@ export default function ErrorPage({
 
   return (
     <>
-      <Navbarcomponent/>
-      <div className="flex h-screen flex-col items-center justify-center gap-8">
-        <h2 className="text-center font-bold text-3xl leading-tight">
+      <Navbarcomponent />
+      <div className="flex flex-col items-center justify-center h-[100vh]">
+        <h2 className="text-3xl font-bold text-white mb-8">
           Oops! Something went wrong!
         </h2>
         <div className="flex flex-row gap-4">
-        <button className="bg-white text-black font-medium py-2 px-3 rounded-lg"
+          <button className="bg-white text-black font-medium py-2 px-3 rounded-lg"
             onClick={
               // Attempt to recover by trying to re-render the segment
               () => reset()

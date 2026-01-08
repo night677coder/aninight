@@ -1,4 +1,4 @@
-# 🎬 VoidAnime
+# 🎬 AniNight
 
 > A modern, feature-rich anime streaming platform built with Next.js, showcasing advanced API integration and data mapping techniques.
 
@@ -120,7 +120,7 @@
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd voidanime
+   cd aninight
    ```
 
 2. **Install dependencies**
@@ -318,7 +318,7 @@ AniList (Anime Metadata)
 ## 📁 Project Structure
 
 ```
-voidanime/
+aninight/
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -394,20 +394,20 @@ vercel
 
 **Rishab** (VoidBorn)
 - GitHub: [@voidbornfr](https://github.com/voidbornfr)
-- Project: VoidAnime
+- Project: AniNight
 
 ### If You Use This Project
 
 Please provide proper attribution:
 
 ```markdown
-Built with [VoidAnime](https://github.com/voidbornfr/voidanime) by Rishab (VoidBorn)
+Built with [AniNight](https://github.com/voidbornfr/voidanime) by Rishab (VoidBorn)
 ```
 
 Or in your code:
 
 ```javascript
-// VoidAnime - API Integration Framework
+// AniNight - API Integration Framework
 // Created by Rishab (VoidBorn)
 // Educational & Development Use Only
 ```

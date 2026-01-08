@@ -32,10 +32,6 @@ function RandomRecommendationsSection({ animeList }) {
             <span>Random Picks</span>
           </div>
         </div>
-        <Link href="/anime/catalog" className="flex items-center gap-1 text-sm text-white hover:underline">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">

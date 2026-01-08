@@ -38,10 +38,6 @@ function UpcomingAnimeSection({ animeList }) {
           <span className="h-6 md:h-8 rounded-md w-[.35rem] md:w-[.3rem] bg-white"></span>
           <h2 className="text-xl md:text-2xl font-medium">Coming Soon</h2>
         </div>
-        <Link href="/anime/catalog?status=NOT_YET_RELEASED" className="flex items-center gap-1 text-sm text-white hover:underline">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

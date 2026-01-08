@@ -35,10 +35,6 @@ function RecentlyUpdatedSection({ animeList }) {
             <span>Latest Changes</span>
           </div>
         </div>
-        <Link href="/anime/catalog?sort=UPDATED_AT_DESC" className="flex items-center gap-1 text-sm text-white hover:underline">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

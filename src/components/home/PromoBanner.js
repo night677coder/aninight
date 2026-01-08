@@ -1,15 +1,19 @@
 "use client";
 import React from 'react';
+import Link from 'next/link';
 import styles from './PromoBanner.module.css';
 
 export default function PromoBanner() {
   return (
-    <div className={styles.promoBanner}>
-      <div className={styles.content}>
-        <span className={styles.text}>
-          Visit <a href="https://voidstream.space" target="_blank" rel="noopener noreferrer" className={styles.link}>https://voidstream.space</a> to stream free movies, series, anime with multi language
-        </span>
+    <Link 
+      href="https://night677coder.github.io/vortex/"
+      className={styles.promoBanner}
+    >
+      <div className={styles.promoContent}>
+        <h1 className={styles.promoTitle}>
+          CLICK - WATCH ALL LATEST MOVIE'S AND TV SHOWS POPULAR - CLICK
+        </h1>
       </div>
-    </div>
+    </Link>
   );
 }

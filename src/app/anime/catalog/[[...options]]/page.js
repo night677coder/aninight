@@ -50,7 +50,7 @@ export async function generateMetadata({ searchParams }) {
 
 function page({searchParams}) {
   return (
-    <div>
+    <div onContextMenu="return false">
       <Navbarcomponent/>
       <div className='mt-[70px]'>
         <NetflixStyleCatalog searchParams={searchParams}/>

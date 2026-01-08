@@ -20,10 +20,6 @@ function GenreSection({ animeList, genre = "Action" }) {
             <span>Popular Genre</span>
           </div>
         </div>
-        <Link href={`/anime/catalog?genres=${genre}`} className="flex items-center gap-1 text-sm text-white hover:underline">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="relative">

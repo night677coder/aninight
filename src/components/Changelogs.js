@@ -9,7 +9,7 @@ const releaseLogs = [
     {
         version: "V2.1.0",
         changes: [
-            "VoidAnime with a refreshed user interface",
+            "AniNight with a refreshed user interface",
             "Improved episode listing with new display modes",
             "Better support for anime with large episode counts (20,000+)",
             "Enhanced mobile experience",

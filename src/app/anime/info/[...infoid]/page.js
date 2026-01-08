@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
   const data = await getInfo(id);
 
   const title = data?.title?.english || data?.title?.romaji || 'Anime Details';
-  const description = data?.description?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Watch anime online on VoidAnime';
+  const description = data?.description?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Watch anime online on AniNight';
   const genres = data?.genres?.join(', ') || '';
   const keywords = [
     title,
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }) {
     keywords: keywords,
     openGraph: {
       type: 'video.tv_show',
-      title: `${title} - Watch Online | VoidAnime`,
+      title: `${title} - Watch Online | AniNight`,
       description: description,
       images: [
         {
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }) {
           alt: title,
         }
       ],
-      siteName: 'VoidAnime',
+      siteName: 'AniNight',
       url: `https://voidanime.live/anime/info/${id}`,
     },
     twitter: {

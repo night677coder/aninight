@@ -11,9 +11,131 @@
     font-family: "28 Days Later";
 }
 
-/* html {
-    scroll-behavior: smooth !important;
-   } */
+/* Remove default margins for mobile */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+    /* Smooth scrolling for mobile */
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Prevent horizontal scroll on mobile */
+    body {
+        overflow-x: hidden;
+        width: 100vw;
+    }
+    
+    /* Touch-friendly spacing */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Better mobile text rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Mobile card optimizations */
+@media (max-width: 640px) {
+    .mobile-card {
+        @apply rounded-lg;
+        @apply shadow-lg;
+        @apply transition-all duration-200;
+    }
+    
+    .mobile-card:hover {
+        @apply scale-[1.02];
+        @apply shadow-xl;
+    }
+    
+    .mobile-card:active {
+        @apply scale-[0.98];
+    }
+}
+
+/* Mobile grid optimizations */
+@media (max-width: 640px) {
+    .mobile-grid {
+        @apply grid-cols-2;
+        @apply gap-3;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-grid {
+        @apply grid-cols-2;
+        @apply gap-2;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-grid {
+        @apply grid-cols-1;
+        @apply gap-3;
+    }
+}
+
+/* Mobile button optimizations */
+@media (max-width: 640px) {
+    .mobile-button {
+        @apply py-3 px-4;
+        @apply text-sm;
+        @apply rounded-lg;
+        @apply transition-all duration-200;
+        @apply active:scale-95;
+    }
+}
+
+/* Mobile text optimizations */
+@media (max-width: 640px) {
+    .mobile-title {
+        @apply text-2xl;
+        @apply font-bold;
+    }
+    
+    .mobile-subtitle {
+        @apply text-lg;
+        @apply font-medium;
+    }
+    
+    .mobile-text {
+        @apply text-sm;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-title {
+        @apply text-xl;
+    }
+    
+    .mobile-subtitle {
+        @apply text-base;
+    }
+}
+
+/* Mobile container optimizations */
+@media (max-width: 640px) {
+    .mobile-container {
+        @apply px-4;
+        @apply py-6;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-container {
+        @apply px-3;
+        @apply py-4;
+    }
+}
    
 ::-webkit-scrollbar {
     width: 6px;

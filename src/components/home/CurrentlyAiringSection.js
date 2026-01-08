@@ -35,10 +35,6 @@ function CurrentlyAiringSection({ animeList }) {
             <span>Weekly Updates</span>
           </div>
         </div>
-        <Link href="/anime/catalog?status=RELEASING" className="flex items-center gap-1 text-sm text-white hover:underline">
-          <span>View All</span>
-          <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

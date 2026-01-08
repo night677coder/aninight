@@ -2,6 +2,7 @@ import React from 'react';
 import { getPopularManga, getTrendingManga } from '@/lib/MangaFunctions';
 import Navbarcomponent from '@/components/navbar/Navbar';
 import MangaCatalogModern from '@/components/catalogcomponent/MangaCatalogModern';
+import Footer from '@/components/Footer';
 import { getAuthSession } from '@/app/api/auth/[...nextauth]/route';
 
 export async function generateMetadata({ searchParams }) {
@@ -59,7 +60,7 @@ async function MangaCatalogPage({ searchParams }) {
   ]);
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden">
+    <div className="min-h-screen bg-black overflow-x-hidden" onContextMenu="return false">
       <Navbarcomponent />
       <div className="pt-[70px] overflow-x-hidden">
         <MangaCatalogModern 

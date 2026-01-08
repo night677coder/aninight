@@ -33,7 +33,7 @@ export async function generateMetadata({ params }) {
   const data = await getMangaInfo(id);
 
   const title = data?.title?.english || data?.title?.romaji || 'Manga Details';
-  const description = data?.description?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Read manga online on VoidAnime';
+  const description = data?.description?.replace(/<[^>]*>/g, '').slice(0, 160) || 'Read manga online on AniNight';
   const genres = data?.genres?.join(', ') || '';
   const keywords = [
     title,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }) {
     keywords: keywords,
     openGraph: {
       type: 'book',
-      title: `${title} - Read Online | VoidAnime`,
+      title: `${title} - Read Online | AniNight`,
       description: description,
       images: [
         {
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }) {
           alt: title,
         }
       ],
-      siteName: 'VoidAnime',
+      siteName: 'AniNight',
       url: `https://voidanime.live/manga/info/${id}`,
     },
     twitter: {
