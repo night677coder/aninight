@@ -14,10 +14,6 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // GitHub Pages configuration
-    basePath: process.env.NODE_ENV === 'production' ? '/aninight' : '',
-    assetPrefix: process.env.NODE_ENV === 'production' ? '/aninight' : '',
-    
     images: {
         domains: ['s4.anilist.co','artworks.thetvdb.com','media.kitsu.io', 'image.tmdb.org', 'mangapill.com', 'cdn.mangapill.com'],
         unoptimized: true,
