@@ -1,22 +1,7 @@
-const withPWA = require("@ducanh2912/next-pwa").default({
-  dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  swcMinify: true,
-  disable: process.env.NODE_ENV === "development",
-  // disable:false,
-  workboxOptions: {
-    disableDevLogs: true,
-  },
-  // ... other options you like
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
         domains: ['s4.anilist.co','artworks.thetvdb.com','media.kitsu.io', 'image.tmdb.org', 'mangapill.com', 'cdn.mangapill.com'],
-        unoptimized: true,
         remotePatterns: [
           {
             protocol: 'https',
@@ -113,7 +98,7 @@ const nextConfig = {
     transpilePackages: ['@consumet/extensions'],
   }
   
-module.exports = withPWA(nextConfig);
+module.exports = nextConfig;
 // const withBundleAnalyzer = require('@next/bundle-analyzer')({
 //   enabled: process.env.ANALYZE === 'true',
 // })
