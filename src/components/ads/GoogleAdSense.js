@@ -1,4 +1,6 @@
+"use client";
 import React from 'react';
+import Script from 'next/script';
 
 export default function GoogleAdSense({ 
   adSlot, 
@@ -9,6 +11,11 @@ export default function GoogleAdSense({
 }) {
   return (
     <div className={`google-adsense ${className}`}>
+      <Script
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        strategy="afterInteractive"
+        crossOrigin="anonymous"
+      />
       <ins
         className="adsbygoogle"
         style={style}
@@ -17,9 +24,9 @@ export default function GoogleAdSense({
         data-ad-format={adFormat}
         data-full-width-responsive={responsive ? "true" : "false"}
       />
-      <script>
-        {(adsbygoogle = window.adsbygoogle || []).push({})}
-      </script>
+      <Script id={`adsense-${adSlot}`} strategy="afterInteractive">
+        {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+      </Script>
     </div>
   );
 }
@@ -27,6 +34,11 @@ export default function GoogleAdSense({
 export function GoogleAdSenseBanner({ adSlot, className = '' }) {
   return (
     <div className={`google-adsense-banner ${className}`}>
+      <Script
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        strategy="afterInteractive"
+        crossOrigin="anonymous"
+      />
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '100%', height: '90px' }}
@@ -35,9 +47,9 @@ export function GoogleAdSenseBanner({ adSlot, className = '' }) {
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
-      <script>
-        {(adsbygoogle = window.adsbygoogle || []).push({})}
-      </script>
+      <Script id={`adsense-banner-${adSlot}`} strategy="afterInteractive">
+        {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+      </Script>
     </div>
   );
 }
@@ -45,6 +57,11 @@ export function GoogleAdSenseBanner({ adSlot, className = '' }) {
 export function GoogleAdSenseSidebar({ adSlot, className = '' }) {
   return (
     <div className={`google-adsense-sidebar ${className}`}>
+      <Script
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        strategy="afterInteractive"
+        crossOrigin="anonymous"
+      />
       <ins
         className="adsbygoogle"
         style={{ display: 'block', width: '300px', height: '250px' }}
@@ -53,9 +70,9 @@ export function GoogleAdSenseSidebar({ adSlot, className = '' }) {
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
-      <script>
-        {(adsbygoogle = window.adsbygoogle || []).push({})}
-      </script>
+      <Script id={`adsense-sidebar-${adSlot}`} strategy="afterInteractive">
+        {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+      </Script>
     </div>
   );
 }

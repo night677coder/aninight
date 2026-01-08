@@ -1,7 +1,6 @@
 "use client";
 import Link from 'next/link';
 import Image from 'next/image';
-import { AdvancedSearch } from '@/lib/Anilistfunctions';
 import React, { useEffect, useState } from 'react';
 import { Pagination, Spinner } from "@nextui-org/react";
 import UseDebounce from '@/utils/UseDebounce';
@@ -16,17 +15,40 @@ function NetflixStyleSearchcard({ searchvalue, selectedYear, seasonvalue, format
     const [searchdata, setsearchdata] = useState(null);
     const [lastpage, setlastpage] = useState();
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [hoveredCard, setHoveredCard] = useState(null);
     const debouncedSearch = UseDebounce(searchvalue, 500);
 
     useEffect(() => {
         const fetchsearch = async () => {
             setLoading(true);
+            setError(null);
             try {
-                const response = await AdvancedSearch(debouncedSearch, selectedYear, seasonvalue, formatvalue, genrevalue, sortbyvalue, currentPage);
-                if (response && response.media) {
-                    setsearchdata(response.media);
-                    setlastpage(response.pageInfo?.lastPage || 1);
+                // Build query parameters
+                const params = new URLSearchParams();
+                if (debouncedSearch) params.append('search', debouncedSearch);
+                if (selectedYear) params.append('year', selectedYear);
+                if (seasonvalue) params.append('season', seasonvalue);
+                if (formatvalue) params.append('format', formatvalue);
+                if (sortbyvalue) params.append('sortby', sortbyvalue);
+                if (genrevalue && genrevalue.length > 0) params.append('genre', JSON.stringify(genrevalue));
+                params.append('page', currentPage.toString());
+
+                const response = await fetch(`/api/anime/search?${params.toString()}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.message || 'Failed to fetch anime data');
+                }
+                
+                if (data && data.media) {
+                    setsearchdata(data.media);
+                    setlastpage(data.pageInfo?.lastPage || 1);
                 } else {
                     setsearchdata([]);
                     setlastpage(1);
@@ -34,6 +56,7 @@ function NetflixStyleSearchcard({ searchvalue, selectedYear, seasonvalue, format
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching search results:', error);
+                setError(error.message || 'Failed to fetch anime data');
                 setsearchdata([]);
                 setlastpage(1);
                 setLoading(false);
@@ -80,8 +103,19 @@ function NetflixStyleSearchcard({ searchvalue, selectedYear, seasonvalue, format
 
     return (
         <div className="w-full bg-black">
+            {/* Error state */}
+            {error && !loading && (
+                <div className="flex flex-col items-center justify-center py-16 text-center bg-black">
+                    <div className="text-4xl font-bold text-red-500 mb-4">Oops! Something went wrong!</div>
+                    <p className="text-xl text-[#999] mb-6">
+                        {error}
+                    </p>
+                    <p className="text-[#999]">Please try again later or adjust your search filters</p>
+                </div>
+            )}
+
             {/* Loading state */}
-            {loading && (
+            {loading && !error && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
                     {Array.from({ length: 18 }, (_, index) => (
                         <div key={index} className="relative rounded-md overflow-hidden bg-[#111] animate-pulse">
@@ -96,7 +130,7 @@ function NetflixStyleSearchcard({ searchvalue, selectedYear, seasonvalue, format
             )}
 
             {/* No results state */}
-            {!loading && searchdata && searchdata.length === 0 && (
+            {!loading && !error && searchdata && searchdata.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 text-center bg-black">
                     <div className="text-4xl font-bold text-white mb-4">No Results Found</div>
                     <p className="text-xl text-[#999] mb-6">
@@ -108,7 +142,7 @@ function NetflixStyleSearchcard({ searchvalue, selectedYear, seasonvalue, format
             )}
 
             {/* Results grid - Netflix style */}
-            {!loading && searchdata && searchdata.length > 0 && (
+            {!loading && !error && searchdata && searchdata.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6 bg-black">
                     {searchdata.map((item) => (
                         <Link 

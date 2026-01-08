@@ -103,12 +103,14 @@ export const AdvancedSearch = async (searchvalue, selectedYear=null, seasonvalue
     const types = {};
 
     for (const item of genrevalue) {
-        const { type, value } = item;
+        const { type, value } = item || {};
 
-        if (types[type]) {
-            types[type].push(value);
-        } else {
-            types[type] = [value];
+        if (type && value) {
+            if (types[type]) {
+                types[type].push(value);
+            } else {
+                types[type] = [value];
+            }
         }
     }
 
@@ -137,10 +139,21 @@ export const AdvancedSearch = async (searchvalue, selectedYear=null, seasonvalue
             }),
         });
 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        
+        if (data.errors) {
+            console.error('GraphQL errors:', data.errors);
+            throw new Error(data.errors[0].message);
+        }
+        
         return data.data.Page;
     } catch (error) {
         console.error('Error fetching search data from AniList:', error);
+        throw error;
     }
 };
 
