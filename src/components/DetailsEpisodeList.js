@@ -109,7 +109,14 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
         
         const response = await getEpisodes(id, data?.idMal, data?.status, false, 0, preferredProvider);
         
+        console.log(`📺 Episode API Response for ID ${id}:`, {
+          responseLength: response?.length,
+          response: response,
+          preferredProvider
+        });
+        
         if (!response || response.length === 0) {
+          console.log(`❌ No episodes found for ID ${id}`);
           setLoading(false);
           return;
         }

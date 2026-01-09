@@ -33,12 +33,27 @@ export async function CombineEpisodeMeta(episodeData, imageData) {
 }
 
 export function ProvidersMap(episodeData, defaultProvider = null, setDefaultProvider = () => { }) {
+  console.log(`🔧 ProvidersMap input:`, {
+    episodeDataLength: episodeData?.length,
+    episodeData: episodeData
+  });
+  
   let dProvider = episodeData.filter((i) => i?.consumet === true);
   let suboptions = [];
   let dubLength = 0;
 
+  console.log(`🎯 Consumet providers found:`, dProvider.length);
+
   if (dProvider?.length > 0) {
     const episodes = dProvider[0].episodes;
+    console.log(`📋 Episodes structure:`, {
+      hasSub: !!episodes?.sub,
+      hasDub: !!episodes?.dub,
+      subLength: episodes?.sub?.length,
+      dubLength: episodes?.dub?.length,
+      episodesType: typeof episodes
+    });
+    
     if (episodes) {
       suboptions = Object.keys(episodes);
       dubLength = Math.floor(Math.max(...Object.values(episodes?.dub || []).map(e => e.number)));

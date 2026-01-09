@@ -55,6 +55,7 @@ export const GET = async (req, { params }) => {
 
   try {
     console.log(`\n🎬 Processing AniList ID: ${anilistId}`);
+    console.log(`📋 Request URL: ${req.url}`);
 
     const providers = [];
 
@@ -150,7 +151,12 @@ export const GET = async (req, { params }) => {
       console.error("[AnimePahe] Error:", error.message);
     }
 
-    console.log(`\n✅ Total providers found: ${providers.length}\n`);
+    console.log(`\n✅ Total providers found: ${providers.length}`);
+    console.log(`📊 Provider details:`, providers.map(p => ({
+      providerId: p.providerId,
+      consumet: p.consumet,
+      episodeCount: p.episodes?.sub?.length || p.episodes?.dub?.length || 0
+    })));
 
     return NextResponse.json(providers, {
       headers: {
