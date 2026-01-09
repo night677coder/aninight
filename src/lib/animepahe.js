@@ -109,6 +109,42 @@ export async function getAnimePaheSession(anilistData) {
 }
 
 /**
+ * Fetch a page with retry logic for AnimePahe API
+ */
+async function fetchPageWithRetry(url, page, retryCount = 0) {
+  const maxRetries = 3;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`AnimePahe episodes page ${page} failed: ${response.status}`);
+    }
+    const data = await response.json();
+    if (!data?.data) return [];
+
+    return data.data.map(ep => ({
+      id: ep.session,
+      number: ep.episode,
+      title: `Episode ${ep.episode}`,
+      episodeId: ep.session,
+      session: ep.session,
+      animeSession: url.split('/')[4] // Extract session from URL
+    }));
+  } catch (error) {
+    console.error(`[AnimePahe] Error fetching page ${page} (attempt ${retryCount + 1}):`, error.message);
+
+    if (retryCount < maxRetries) {
+      // Wait before retry with exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+      return fetchPageWithRetry(url, page, retryCount + 1);
+    }
+
+    console.error(`[AnimePahe] Failed to fetch page ${page} after ${maxRetries + 1} attempts`);
+    return [];
+  }
+}
+
+/**
  * Get episodes for an AnimePahe session
  * @param {string|object} sessionData - Either session string or object with session and totalEpisodes
  */
@@ -132,23 +168,34 @@ export async function getAnimePaheEpisodes(sessionData) {
     const initialData = await initialResponse.json();
     
     // Debug: Log the full response structure
-    const paginationInfo = initialData.paginationInfo || {};
-    console.log(`[AnimePahe] API Response structure:`, JSON.stringify({
-      total: paginationInfo.total,
-      perPage: paginationInfo.perPage,
-      currentPage: paginationInfo.currentPage,
-      lastPage: paginationInfo.lastPage,
-      from: paginationInfo.from,
-      to: paginationInfo.to,
-      data_length: initialData.data?.length
-    }));
+    console.log(`[AnimePahe] Raw API Response:`, JSON.stringify(initialData, null, 2));
     
-    if (!initialData?.data || initialData.data.length === 0) {
+    // Handle different response structures
+    let episodes = [];
+    let paginationInfo = {};
+    
+    if (initialData.data && Array.isArray(initialData.data)) {
+      episodes = initialData.data;
+      paginationInfo = initialData.paginationInfo || {};
+    } else if (initialData.episodes && Array.isArray(initialData.episodes)) {
+      episodes = initialData.episodes;
+      paginationInfo = initialData.pagination || {};
+    } else if (Array.isArray(initialData)) {
+      episodes = initialData;
+    } else {
+      console.error('[AnimePahe] Unexpected response structure:', initialData);
+      return [];
+    }
+    
+    console.log(`[AnimePahe] Processed ${episodes.length} episodes`);
+    console.log(`[AnimePahe] Pagination info:`, paginationInfo);
+    
+    if (episodes.length === 0) {
       return [];
     }
     
     // Transform episodes from first page
-    const firstPageEpisodes = initialData.data.map(ep => ({
+    const firstPageEpisodes = episodes.map(ep => ({
       id: ep.session,
       number: ep.episode,
       title: `Episode ${ep.episode}`,
@@ -185,27 +232,7 @@ export async function getAnimePaheEpisodes(sessionData) {
         
         for (let page = batchStart; page <= batchEnd; page++) {
           pagePromises.push(
-            fetch(`${ANIMEPAHE_BASE_URL}/api/${session}/releases?sort=episode_asc&page=${page}`)
-              .then(res => {
-                if (!res.ok) throw new Error(`AnimePahe episodes page ${page} failed: ${res.status}`);
-                return res.json();
-              })
-              .then(data => {
-                if (!data?.data) return [];
-                
-                return data.data.map(ep => ({
-                  id: ep.session,
-                  number: ep.episode,
-                  title: `Episode ${ep.episode}`,
-                  episodeId: ep.session,
-                  session: ep.session,
-                  animeSession: session
-                }));
-              })
-              .catch(err => {
-                console.error(`[AnimePahe] Error fetching page ${page}:`, err);
-                return [];
-              })
+            fetchPageWithRetry(`${ANIMEPAHE_BASE_URL}/api/${session}/releases?sort=episode_asc&page=${page}`, page)
           );
         }
         

@@ -506,10 +506,11 @@ export const getHiAnimeEpisodes = async (hiAnimeId) => {
     }
 
     return data.data.episodes.map(ep => ({
-      id: ep.episodeId,
-      number: ep.number,
-      title: ep.title || `Episode ${ep.number}`,
+      id: ep.episodeId || ep.id,
+      number: ep.number || ep.episode,
+      title: ep.title || `Episode ${ep.number || ep.episode}`,
       isFiller: ep.isFiller || false,
+      episodeId: ep.episodeId || ep.id,
     }));
   } catch (error) {
     console.error('[HiAnime] Episodes fetch error:', error.message);

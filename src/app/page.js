@@ -25,9 +25,16 @@ async function getHomePage() {
     let cachedData;
     if (redis) {
       cachedData = await redis.get(`homepage`);
-      if (!JSON.parse(cachedData)) {
-        await redis.del(`homepage`);
-        cachedData = null;
+      if (cachedData) {
+        try {
+          if (!JSON.parse(cachedData)) {
+            await redis.del(`homepage`);
+            cachedData = null;
+          }
+        } catch (e) {
+          await redis.del(`homepage`);
+          cachedData = null;
+        }
       }
     }
     if (cachedData) {
@@ -115,6 +122,7 @@ async function getHomePage() {
 
 async function Home() {
   const session = await getAuthSession();
+  const homePageData = await getHomePage();
   const { 
     herodata = [], 
     top100data = [], 
@@ -126,8 +134,13 @@ async function Home() {
     recentlyUpdatedData = [],
     randomRecsData = [],
     popularMangaData = []
-  } = await getHomePage();
-  const newsData = await fetchHomePageNews(6);
+  } = homePageData || {};
+  let newsData = [];
+  try {
+    newsData = await fetchHomePageNews(6);
+  } catch (e) {
+    newsData = [];
+  }
   // const history = await getWatchHistory();
   // console.log(history)
 

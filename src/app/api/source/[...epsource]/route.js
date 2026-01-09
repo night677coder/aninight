@@ -7,16 +7,24 @@ async function consumetEpisode(id, subtype) {
     try {
       // Format episode ID from ?ep= to $episode$ format for streaming API
       const formattedId = formatEpisodeId(id);
-      
+
       // Use the new URL format with type parameter instead of dub parameter
       const audioType = subtype?.toLowerCase() === 'dub' ? 'dub' : 'sub';
+
+      // Check if API_URI is defined, otherwise use a fallback or throw error
+      const apiUri = process.env.API_URI;
+      if (!apiUri) {
+        console.error('API_URI environment variable is not set');
+        throw new Error('API_URI environment variable is not configured');
+      }
+
       console.log(`[EPISODE ID FORMATTING]`);
       console.log(`  Original ID: ${id}`);
       console.log(`  Formatted ID: ${formattedId}`);
-      console.log(`  Full URL: ${process.env.API_URI}/watch?episodeId=${formattedId}&type=${audioType}`);
-      
+      console.log(`  Full URL: ${apiUri}/watch?episodeId=${formattedId}&type=${audioType}`);
+
       const { data } = await axios.get(
-        `${process.env.API_URI}/watch?episodeId=${formattedId}&type=${audioType}`
+        `${apiUri}/watch?episodeId=${formattedId}&type=${audioType}`
       );
       
       console.log(`Received response from Consumet API with ${data?.sources?.length || 0} sources for ${audioType.toUpperCase()} request`);

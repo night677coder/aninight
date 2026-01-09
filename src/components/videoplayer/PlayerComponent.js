@@ -88,10 +88,16 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
         useDataInfo.setState({ dataInfo: data });
         setCurrentProvider(provider);
         setCurrentSubdub(subdub);
-        
+
+        // Reset states when provider changes to prevent stale data
+        setSrc(null);
+        setSubtitles(null);
+        setThumbnails(null);
+        setSkipTimes(null);
+        setError(false);
+
         // Create a function to fetch sources that we can call multiple times if needed
         const fetchSources = async (retryCount = 0) => {
-            setError(false);
             setLoading(true);
             try {
                 console.log(`Fetching sources with subdub=${subdub}, provider=${provider}, retry=${retryCount}`);
@@ -122,7 +128,7 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
                 
                 const response = await getSources(id, provider, epId, epNum, subdub, null, animeSession, episodeSession);
 
-                if (!response?.sources?.length > 0) {
+                if (!response || (!response.sources && !response.download)) {
                     // Special handling for AnimePahe
                     if (provider === 'animepahe') {
                         // Try to get anime session from localStorage if not already provided
@@ -138,7 +144,7 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
                     }
                     
                     // If this is the first attempt and we're coming from a direct link, try again
-                    if (retryCount === 0 && window.performance.navigation.type !== 1) { // type 1 is reload
+                    if (retryCount === 0 && window.performance?.navigation?.type !== 1) { // type 1 is reload
                         console.log("No sources found on first attempt, retrying...");
                         setTimeout(() => fetchSources(retryCount + 1), 1000); // Retry after 1 second
                         return;
@@ -150,7 +156,10 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
                     return;
                 }
 
-                const sources = response?.sources?.find(i => i.quality === "default" || i.quality === "auto")?.url || response?.sources?.find(i => i.quality === "1080p")?.url || response?.sources?.find(i => i.type === "hls")?.url;
+                const sources = response?.sources?.find(i => i.quality === "default" || i.quality === "auto")?.url || 
+                              response?.sources?.find(i => i.quality === "1080p")?.url || 
+                              response?.sources?.find(i => i.type === "hls")?.url ||
+                              response?.download; // Fallback to download URL if no sources
                 console.log(`Found source URL for ${subdub} episode`);
                 setSrc(sources);
                 const download = response?.download;
@@ -214,8 +223,8 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
             } catch (error) {
                 console.error('Error fetching data:', error);
                 
-                // If this is the first attempt and we're coming from a direct link, try again
-                if (retryCount === 0 && window.performance.navigation.type !== 1) { // type 1 is reload
+                // If this is first attempt and we're coming from a direct link, try again
+                if (retryCount === 0 && window.performance?.navigation?.type !== 1) { // type 1 is reload
                     console.log("Error on first attempt, retrying...");
                     setTimeout(() => fetchSources(retryCount + 1), 1000); // Retry after 1 second
                     return;

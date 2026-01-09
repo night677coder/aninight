@@ -55,7 +55,20 @@ function Episodesection({ data, id, progress, setUrl }) {
         const response = await getEpisodes(id, data?.idMal, data?.status, false, 0, provider);
         setEpisodeData(response);
         if (response) {
-          const {suboptions, dubLength} = ProvidersMap(response, defaultProvider, setdefaultProvider);
+          // Handle both new bulk format and legacy format
+          let providers;
+          if (response.success && response.results) {
+            // New bulk format
+            const animeResult = response.results.find(result => result.animeId === id);
+            providers = animeResult ? animeResult.providers : response;
+          } else if (Array.isArray(response)) {
+            // Legacy format - response is already the providers array
+            providers = response;
+          } else {
+            providers = response;
+          }
+          
+          const {suboptions, dubLength} = ProvidersMap(providers, defaultProvider, setdefaultProvider);
           setSuboptions(suboptions);
           setDubcount(dubLength);
         }
@@ -120,7 +133,20 @@ function Episodesection({ data, id, progress, setUrl }) {
       const response = await getEpisodes(id, data?.idMal, data?.status === "RELEASING", true);
       setEpisodeData(response);
       if (response) {
-        const {suboptions, dubLength} = ProvidersMap(response, defaultProvider, setdefaultProvider);
+        // Handle both new bulk format and legacy format
+        let providers;
+        if (response.success && response.results) {
+          // New bulk format
+          const animeResult = response.results.find(result => result.animeId === id);
+          providers = animeResult ? animeResult.providers : response;
+        } else if (Array.isArray(response)) {
+          // Legacy format - response is already the providers array
+          providers = response;
+        } else {
+          providers = response;
+        }
+        
+        const {suboptions, dubLength} = ProvidersMap(providers, defaultProvider, setdefaultProvider);
         setSuboptions(suboptions);
         setDubcount(dubLength);
       }

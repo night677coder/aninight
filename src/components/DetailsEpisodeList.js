@@ -108,25 +108,40 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
         const preferredProvider = savedSettings?.defaultProvider || 'animepahe';
         
         const response = await getEpisodes(id, data?.idMal, data?.status, false, 0, preferredProvider);
-        
+
         console.log(`📺 Episode API Response for ID ${id}:`, {
-          responseLength: response?.length,
           response: response,
           preferredProvider
         });
-        
+
         if (!response || response.length === 0) {
           console.log(`❌ No episodes found for ID ${id}`);
           setLoading(false);
           return;
         }
-        
-        setEpisodeData(response);
-        const { suboptions, dubLength } = ProvidersMap(response);
+
+        // Handle both new bulk format and legacy format
+        let animeResult;
+        if (response.success && response.results) {
+          // New bulk format
+          animeResult = response.results.find(result => result.animeId === id);
+        } else if (Array.isArray(response)) {
+          // Legacy format - response is already the providers array
+          animeResult = { providers: response };
+        }
+
+        if (!animeResult || !animeResult.providers || animeResult.providers.length === 0) {
+          console.log(`❌ No providers found for ID ${id}`);
+          setLoading(false);
+          return;
+        }
+
+        setEpisodeData(animeResult.providers);
+        const { suboptions, dubLength } = ProvidersMap(animeResult.providers);
         setSuboptions(suboptions);
         setDubCount(dubLength);
-        
-        if (response.length > 0) {
+
+        if (animeResult.providers.length > 0) {
           // Set the provider that was used
           setDefaultProvider(preferredProvider);
         }
@@ -218,14 +233,29 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
     setRefreshLoading(true);
     try {
       const response = await getEpisodes(id, data?.idMal, data?.status === "RELEASING", true);
-      
+
       if (!response || response.length === 0) {
         setRefreshLoading(false);
         return;
       }
-      
-      setEpisodeData(response);
-      const { suboptions, dubLength } = ProvidersMap(response);
+
+      // Handle both new bulk format and legacy format
+      let animeResult;
+      if (response.success && response.results) {
+        // New bulk format
+        animeResult = response.results.find(result => result.animeId === id);
+      } else if (Array.isArray(response)) {
+        // Legacy format - response is already the providers array
+        animeResult = { providers: response };
+      }
+
+      if (!animeResult || !animeResult.providers || animeResult.providers.length === 0) {
+        setRefreshLoading(false);
+        return;
+      }
+
+      setEpisodeData(animeResult.providers);
+      const { suboptions, dubLength } = ProvidersMap(animeResult.providers);
       setSuboptions(suboptions);
       setDubCount(dubLength);
       toast.success("Episodes refreshed successfully!");
@@ -258,14 +288,15 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
   };
   
   // Adjust items per page based on display mode
-  if (mode === 'compact') {
-    setItemsPerPage(50);
-  } else if (mode === 'details') {
-    setItemsPerPage(15);
-  } else {
-    setItemsPerPage(24);
-  }
-};
+  useEffect(() => {
+    if (displayMode === 'compact') {
+      setItemsPerPage(50);
+    } else if (displayMode === 'details') {
+      setItemsPerPage(15);
+    } else {
+      setItemsPerPage(24);
+    }
+  }, [displayMode]);
 
 // Handle search input
 const handleSearch = (e) => {
@@ -281,6 +312,205 @@ const toggleMobileFilters = () => {
 // Check if an episode is the next one to watch
 const isNextEpisode = (episodeNumber) => {
   return episodeNumber === progress + 1;
+};
+
+// Render episode grid items
+const renderGridEpisodes = () => {
+  return (
+    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 mt-4">
+      {filteredEpisodes.map((episode) => {
+        const isCurrentEp = episode.number === progress + 1;
+        const isWatched = episode.number <= progress;
+        let episodeUrl = `/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
+          episode?.id || episode?.episodeId
+        )}&ep=${episode?.number}&type=${subtype}`;
+
+        // For AnimePahe, add the anime session
+        if (defaultProvider === 'animepahe') {
+          if (episode.animeSession) {
+            episodeUrl += `&session=${encodeURIComponent(episode.animeSession)}`;
+          } else {
+            // Try to get from localStorage as fallback
+            const savedSession = localStorage.getItem(`animepahe_session_${id}`);
+            if (savedSession) {
+              episodeUrl += `&session=${encodeURIComponent(savedSession)}`;
+            }
+          }
+        }
+
+        return (
+          <Link
+            href={episodeUrl}
+            key={episode?.id || episode?.episodeId}
+            className={`flex flex-col relative transition-all duration-300 hover:scale-105 ${isCurrentEp ? 'ring-2 ring-white scale-95' : ''
+              }`}
+          >
+            <div className="aspect-video relative overflow-hidden rounded-lg bg-[#18181b]">
+              <Image
+                src={episode?.image || episode?.img || data?.coverImage?.extraLarge || data?.bannerImage}
+                alt={`Episode ${episode.number}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
+                <span className="text-white text-sm font-medium">EP {episode.number}</span>
+              </div>
+              {isCurrentEp && (
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              )}
+              {isWatched && !isCurrentEp && (
+                <div className="absolute top-2 right-2 bg-[#333] rounded-full p-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                </div>
+              )}
+              {episode.isFiller && (
+                <div className="absolute top-2 left-2 bg-yellow-600 text-white text-xs px-1.5 py-0.5 rounded">
+                  Filler
+                </div>
+              )}
+            </div>
+            <div className="mt-1.5 px-0.5">
+              <h4 className="text-xs md:text-sm font-medium truncate">{episode.title || `Episode ${episode.number}`}</h4>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
+
+// Render compact episode list
+const renderCompactEpisodes = () => {
+  return (
+    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 mt-4">
+      {filteredEpisodes.map((episode) => {
+        const isCurrentEp = episode.number === progress + 1;
+        const isWatched = episode.number <= progress;
+        let episodeUrl = `/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
+          episode?.id || episode?.episodeId
+        )}&ep=${episode?.number}&type=${subtype}`;
+
+        // For AnimePahe, add the anime session
+        if (defaultProvider === 'animepahe') {
+          if (episode.animeSession) {
+            episodeUrl += `&session=${encodeURIComponent(episode.animeSession)}`;
+          } else {
+            // Try to get from localStorage as fallback
+            const savedSession = localStorage.getItem(`animepahe_session_${id}`);
+            if (savedSession) {
+              episodeUrl += `&session=${encodeURIComponent(savedSession)}`;
+            }
+          }
+        }
+
+        return (
+          <Link
+            href={episodeUrl}
+            key={episode?.id || episode?.episodeId}
+          >
+            <div
+              className={`flex items-center justify-center h-10 rounded-md transition ${isCurrentEp
+                ? 'bg-white text-black font-semibold'
+                : isWatched
+                  ? 'bg-[#333] hover:bg-[#444] text-white'
+                  : episode.isFiller
+                    ? 'bg-[#f9a825]/20 hover:bg-[#f9a825]/40 text-white'
+                    : 'bg-[#27272a] hover:bg-[#3f3f46] text-gray-300'
+                }`}
+            >
+              {episode.number}
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
+
+// Render detailed episode list
+const renderDetailedEpisodes = () => {
+  return (
+    <div className="flex flex-col gap-3 mt-4">
+      {filteredEpisodes.map((episode) => {
+        const isCurrentEp = episode.number === progress + 1;
+        const isWatched = episode.number <= progress;
+        let episodeUrl = `/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
+          episode?.id || episode?.episodeId
+        )}&ep=${episode?.number}&type=${subtype}`;
+
+        // For AnimePahe, add the anime session
+        if (defaultProvider === 'animepahe') {
+          if (episode.animeSession) {
+            episodeUrl += `&session=${encodeURIComponent(episode.animeSession)}`;
+          } else {
+            // Try to get from localStorage as fallback
+            const savedSession = localStorage.getItem(`animepahe_session_${id}`);
+            if (savedSession) {
+              episodeUrl += `&session=${encodeURIComponent(savedSession)}`;
+            }
+          }
+        }
+
+        return (
+          <Link
+            href={episodeUrl}
+            key={episode?.id || episode?.episodeId}
+            className={`flex flex-row transition-all duration-300 hover:bg-[#27272a] rounded-xl overflow-hidden ${isCurrentEp ? 'ring-2 ring-white opacity-80' : ''
+              }`}
+          >
+            <div className="relative w-[180px] h-[100px]">
+              <Image
+                src={episode?.image || episode?.img || data?.coverImage?.extraLarge || data?.bannerImage}
+                alt={`Episode ${episode.number}`}
+                fill
+                className="object-cover"
+                sizes="180px"
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                {isCurrentEp && (
+                  <div className="rounded-full bg-black/50 p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                )}
+                {isWatched && !isCurrentEp && (
+                  <div className="absolute top-2 right-2 bg-[#333] rounded-full p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div className="absolute bottom-2 left-2 bg-black/70 text-white text-sm px-2 py-0.5 rounded-md">
+                EP {episode.number}
+              </div>
+              {episode.isFiller && (
+                <div className="absolute top-2 left-2 bg-yellow-600 text-white text-xs px-1.5 py-0.5 rounded">
+                  Filler
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col p-3 flex-1">
+              <h3 className="text-sm md:text-base font-medium">{episode.title || `Episode ${episode.number}`}</h3>
+              {episode.description && (
+                <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                  {episode.description}
+                </p>
+              )}
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
 };
 
 if (data?.type === 'MANGA') {
@@ -304,8 +534,25 @@ if (data?.status === 'NOT_YET_RELEASED') {
 if (!allEpisodes || allEpisodes.length === 0) {
   return (
     <div className="p-6 bg-black rounded-xl text-center">
-      <p className="text-lg font-semibold text-gray-200">No Episodes Available</p>
-      <p className="text-gray-400">This anime is currently unavailable. Check back later for updates!</p>
+      <div className="flex flex-col items-center gap-4">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p className="text-xl font-bold text-gray-200 mb-2">No Episodes Available</p>
+          <p className="text-gray-400">This anime is currently unavailable. Check back later for updates!</p>
+        </div>
+        <button
+          onClick={refreshEpisodes}
+          className="mt-4 px-6 py-2 bg-[#121212] hover:bg-[#1a1a1a] text-white rounded-lg transition-colors flex items-center gap-2"
+          disabled={refreshLoading}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={`w-4 h-4 ${refreshLoading ? "animate-spin" : ""}`}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+          {refreshLoading ? 'Refreshing...' : 'Check for Updates'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -365,107 +612,8 @@ return (
               <SelectItem key={item.providerId} value={item.providerId}>
                 {item.providerId}
               </SelectItem>
-      <div className="p-4 bg-black rounded-xl text-center">
-        <div className="animate-pulse">
-          <div className="h-10 bg-[#121212] rounded-md w-3/4 mx-auto mb-4"></div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {Array(8).fill(0).map((_, idx) => (
-              <div key={idx} className="space-y-2">
-                <div className="h-28 bg-[#121212] rounded-md"></div>
-                <div className="h-4 bg-[#121212] rounded w-3/4"></div>
-              </div>
             ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-  
-  if (data?.type === 'MANGA') {
-    return (
-      <div className="p-6 bg-black rounded-xl text-center">
-        <p className="text-lg font-semibold text-gray-200">Coming Soon!</p>
-        <p className="text-gray-400">Cannot Fetch Manga, Feature Coming Soon.</p>
-      </div>
-    );
-  }
-  
-  if (data?.status === 'NOT_YET_RELEASED') {
-    return (
-      <div className="p-6 bg-black rounded-xl text-center">
-        <p className="text-lg font-semibold text-gray-200">Coming Soon!</p>
-        <p className="text-gray-400">Sorry, this anime isn't out yet. Keep an eye out for updates!</p>
-      </div>
-    );
-  }
-  
-  if (!allEpisodes || allEpisodes.length === 0) {
-    return (
-      <div className="p-6 bg-black rounded-xl text-center">
-        <p className="text-lg font-semibold text-gray-200">No Episodes Available</p>
-        <p className="text-gray-400">This anime is currently unavailable. Check back later for updates!</p>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="bg-black rounded-xl p-4 shadow-lg">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <h3 className="font-bold text-lg text-gray-100">Episodes</h3>
-          <Tooltip content="Refresh Episodes">
-            <button 
-              onClick={refreshEpisodes} 
-              className="p-1.5 rounded-full bg-[#121212] hover:bg-[#1a1a1a] transition-colors"
-              disabled={refreshLoading}
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                strokeWidth="2" 
-                stroke="currentColor" 
-                className={`w-4 h-4 ${refreshLoading ? "animate-spin" : ""}`}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-              </svg>
-            </button>
-          </Tooltip>
-          <span className="text-gray-400 text-sm">{allEpisodes?.length || 0} episodes</span>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center sm:hidden">
-            <button 
-              onClick={toggleMobileFilters}
-              className="p-1.5 rounded-full bg-[#121212] hover:bg-[#1a1a1a] transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-            </button>
-          </div>
-          
-          <div className={`${showMobileFilters ? 'flex' : 'hidden'} sm:flex flex-wrap items-center gap-2`}>
-            <Select
-              aria-label="Provider"
-              selectedKeys={[defaultProvider]}
-              className="w-32 min-w-[8rem]"
-              size="sm"
-              variant="bordered"
-              onChange={handleProviderChange}
-              classNames={{
-                trigger: "bg-[#121212] data-[hover=true]:bg-[#1a1a1a]",
-                popover: "bg-[#121212]"
-              }}
-            >
-              {episodeData?.map((item) => (
-                <SelectItem key={item.providerId} value={item.providerId}>
-                  {item.providerId}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
+          </Select>
           
           <div className="flex items-center gap-2">
             <Input
@@ -488,93 +636,94 @@ return (
           </div>
         </div>
       </div>
-      
-      {/* Mobile search bar */}
-      {showMobileFilters && (
-        <div className="mb-4 sm:hidden">
-          <Input
-            type="text"
-            placeholder="Search episodes..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full"
-            size="sm"
-            variant="bordered"
-            classNames={{
-              inputWrapper: "bg-[#121212] data-[hover=true]:bg-[#1a1a1a]"
-            }}
-            startContent={
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            }
-          />
-        </div>
-      )}
-      
-      {/* Progress indicator */}
-      {progress > 0 && (
-        <div className="mb-4 bg-[#121212] rounded-lg p-3">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm text-gray-300">Progress</span>
-            <span className="text-sm text-gray-300">{progress} / {data?.episodes || '?'} episodes</span>
-          </div>
-          <div className="w-full bg-[#1a1a1a] rounded-full h-2.5">
-            <div 
-              className="bg-white h-2.5 rounded-full" 
-              style={{ width: `${data?.episodes ? (progress / data.episodes) * 100 : 0}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
-      
-      {/* Legend */}
-      <div className="flex flex-wrap gap-3 mb-4 text-xs text-gray-400">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-white rounded-full"></div>
-          <span>Next episode</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-[#333] rounded-full"></div>
-          <span>Watched</span>
-        </div>
-        {filteredEpisodes.some(ep => ep.isFiller) && (
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-yellow-800/30 rounded-full"></div>
-            <span>Filler</span>
-          </div>
-        )}
+    </div>
+    
+    {/* Mobile search bar */}
+    {showMobileFilters && (
+      <div className="mb-4 sm:hidden">
+        <Input
+          type="text"
+          placeholder="Search episodes..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full"
+          size="sm"
+          variant="bordered"
+          classNames={{
+            inputWrapper: "bg-[#121212] data-[hover=true]:bg-[#1a1a1a]"
+          }}
+          startContent={
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          }
+        />
       </div>
-      
-      {/* Episode lists by display mode */}
-      <div ref={episodeListRef} className="overflow-auto" style={{ maxHeight: '70vh', backgroundColor: '#000000' }}>
-        {displayMode === 'grid' && renderGridEpisodes()}
-        {displayMode === 'compact' && renderCompactEpisodes()}
-        {displayMode === 'details' && renderDetailedEpisodes()}
+    )}
+    
+    {/* Progress indicator */}
+    {progress > 0 && (
+      <div className="mb-4 bg-[#121212] rounded-lg p-3">
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-sm text-gray-300">Progress</span>
+          <span className="text-sm text-gray-300">{progress} / {data?.episodes || '?'} episodes</span>
+        </div>
+        <div className="w-full bg-[#1a1a1a] rounded-full h-2.5">
+          <div 
+            className="bg-white h-2.5 rounded-full" 
+            style={{ width: `${data?.episodes ? (progress / data.episodes) * 100 : 0}%` }}
+          ></div>
+        </div>
       </div>
-      
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-4 flex justify-center">
-          <Pagination
-            total={totalPages}
-            initialPage={currentPage}
-            onChange={setCurrentPage}
-            size="sm"
-            showControls
-            color="secondary"
-            variant="bordered"
-            classNames={{
-              cursor: "bg-white text-black",
-              item: "text-white bg-[#121212] hover:bg-[#1a1a1a]",
-              prev: "bg-[#121212] hover:bg-[#1a1a1a]",
-              next: "bg-[#121212] hover:bg-[#1a1a1a]"
-            }}
-          />
+    )}
+    
+    {/* Legend */}
+    <div className="flex flex-wrap gap-3 mb-4 text-xs text-gray-400">
+      <div className="flex items-center gap-1">
+        <div className="w-3 h-3 bg-white rounded-full"></div>
+        <span>Next episode</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <div className="w-3 h-3 bg-[#333] rounded-full"></div>
+        <span>Watched</span>
+      </div>
+      {filteredEpisodes.some(ep => ep.isFiller) && (
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-yellow-800/30 rounded-full"></div>
+          <span>Filler</span>
         </div>
       )}
     </div>
-  );
+    
+    {/* Episode lists by display mode */}
+    <div ref={episodeListRef} className="overflow-auto" style={{ maxHeight: '70vh', backgroundColor: '#000000' }}>
+      {displayMode === 'grid' && renderGridEpisodes()}
+      {displayMode === 'compact' && renderCompactEpisodes()}
+      {displayMode === 'details' && renderDetailedEpisodes()}
+    </div>
+    
+    {/* Pagination */}
+    {totalPages > 1 && (
+      <div className="mt-4 flex justify-center">
+        <Pagination
+          total={totalPages}
+          initialPage={currentPage}
+          onChange={setCurrentPage}
+          size="sm"
+          showControls
+          color="secondary"
+          variant="bordered"
+          classNames={{
+            cursor: "bg-white text-black",
+            item: "text-white bg-[#121212] hover:bg-[#1a1a1a]",
+            prev: "bg-[#121212] hover:bg-[#1a1a1a]",
+            next: "bg-[#121212] hover:bg-[#1a1a1a]"
+          }}
+        />
+      </div>
+    )}
+  </div>
+);
 }
 
 export default DetailsEpisodeList; 

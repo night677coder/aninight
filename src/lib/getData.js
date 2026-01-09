@@ -15,17 +15,18 @@ export const getRecentEpisodes = async () => {
   }
 }
 
-export const getEpisodes = async (id, idMal, status, refresh = false, retryCount = 0) => {
+export const getEpisodes = async (id, idMal, status, refresh = false, retryCount = 0, provider = null) => {
   const maxRetries = 2;
 
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
+    // Use the new bulk episode API
     const response = await fetch(
-      `${checkEnvironment()}/api/episode/${id}?idMal=${idMal}&releasing=${status === "RELEASING" ? "true" : "false"}&refresh=${refresh}`,
+      `${checkEnvironment()}/api/episode/bulk?ids=${id}`,
       {
-        next: { revalidate: status === "FINISHED" ? false : 3600 },
+        next: { revalidate: 3600 },
         signal: controller.signal
       }
     );
@@ -36,17 +37,34 @@ export const getEpisodes = async (id, idMal, status, refresh = false, retryCount
       throw new Error(`Failed to fetch episodes: ${response.status} ${response.statusText}`)
     }
 
-    const data = await response.json();
+    const bulkData = await response.json();
 
-    if ((!data || data.length === 0) && retryCount < maxRetries) {
+    // Extract the episode data for this specific anime ID from the bulk response
+    if (bulkData.success && bulkData.results && bulkData.results.length > 0) {
+      const animeResult = bulkData.results.find(result => result.animeId === id);
+      if (animeResult && animeResult.providers) {
+        console.log(`✅ Retrieved episodes for ${id}: ${animeResult.providers.length} providers`);
+        return animeResult.providers;
+      }
+    }
+
+    // Handle legacy format for backward compatibility
+    if (Array.isArray(bulkData)) {
+      console.log(`✅ Retrieved episodes for ${id}: ${bulkData.length} providers (legacy format)`);
+      return bulkData;
+    }
+
+    // If no data found and we haven't exceeded retries, try again
+    if (retryCount < maxRetries) {
       console.log(`Retrying episode fetch for ${id}, attempt ${retryCount + 1}`);
       await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
       return getEpisodes(id, idMal, status, refresh, retryCount + 1);
     }
 
-    return data;
+    console.log(`❌ No episodes found for ${id}`);
+    return [];
   } catch (error) {
-    console.error("Error fetching Consumet Episodes:", error.message || error);
+    console.error("Error fetching episodes:", error.message || error);
 
     if (retryCount < maxRetries && (error.name === 'AbortError' || error.message.includes('fetch'))) {
       console.log(`Retrying episode fetch for ${id} after error, attempt ${retryCount + 1}`);
