@@ -89,21 +89,32 @@ function Herosection({ data }) {
 
   // Load YouTube IFrame API
   useEffect(() => {
-    if (populardata?.trailer?.id && settings?.bannertrailer === true) {
+    console.log('HeroSection: Checking video conditions', {
+      hasTrailer: !!populardata?.trailer?.id,
+      trailerId: populardata?.trailer?.id,
+      herotrailerSetting: settings?.herotrailer,
+      settings: settings
+    });
+
+    if (populardata?.trailer?.id && settings?.herotrailer === true) {
+      console.log('HeroSection: Loading YouTube player for trailer:', populardata.trailer.id);
       if (window.YT) {
         loadPlayer();
       } else {
+        console.log('HeroSection: Loading YouTube API script');
         const tag = document.createElement("script");
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName("script")[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         window.onYouTubeIframeAPIReady = loadPlayer;
       }
+    } else {
+      console.log('HeroSection: Video conditions not met, showing image');
     }
-  }, [populardata, settings?.bannertrailer]);
+  }, [populardata, settings?.herotrailer]);
 
   function loadPlayer() {
-    if (populardata?.trailer?.id && playerContainerRef.current && settings?.bannertrailer === true) {
+    if (populardata?.trailer?.id && playerContainerRef.current && settings?.herotrailer === true) {
       if (playerRef.current) {
         playerRef.current.destroy();
       }
@@ -172,7 +183,7 @@ function Herosection({ data }) {
         },
       });
     } else {
-      console.warn('Cannot load player: Missing trailer data, container ref, or banner trailer setting');
+      console.warn('Cannot load player: Missing trailer data, container ref, or hero trailer setting');
       setVideoEnded(true); // Fallback to image if video cannot load
     }
   }
@@ -228,23 +239,26 @@ function Herosection({ data }) {
       ref={carouselRef}
       className={`relative w-full h-screen overflow-hidden bg-black transition-opacity duration-500 ${isNavigating ? 'opacity-70' : 'opacity-100'} mt-0 sm:mt-0 md:mt-0`}
     >
-      {/* Background video or image with gradient overlays */}
-      {populardata?.trailer?.id && settings.herotrailer === true && !videoEnded ? (
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <div ref={playerContainerRef} className={styles.herovideo}></div>
-        </div>
-      ) : (
-        <div className="absolute inset-0 w-full h-full">
-          {populardata &&
-            <Image 
-              src={populardata?.bannerImage} 
-              alt={populardata?.title?.[animetitle] || populardata?.title?.romaji} 
-              fill
-              priority={true} 
-              className="object-cover transition-transform duration-700 ease-out"
-            />
-          }
-        </div>
+      {/* Background image */}
+      <div className="absolute inset-0 w-full h-full">
+        {populardata &&
+          <Image
+            src={populardata?.bannerImage}
+            alt={populardata?.title?.[animetitle] || populardata?.title?.romaji}
+            fill
+            priority={true}
+            className="object-cover transition-transform duration-700 ease-out"
+          />
+        }
+      </div>
+      
+      {/* YouTube video container */}
+      {populardata?.trailer?.id && settings?.herotrailer === true && !videoEnded && (
+        <div 
+          ref={playerContainerRef}
+          className="absolute inset-0 w-full h-full z-0"
+          style={{ pointerEvents: 'none' }}
+        />
       )}
       
       {/* Netflix-style gradient overlays - reduced opacity for clearer background */}

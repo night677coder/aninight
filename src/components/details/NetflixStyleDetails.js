@@ -239,18 +239,12 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10"></div>
         
-        {/* Video player or background image */}
-        {data?.trailer?.id && settings.bannertrailer === true && !videoEnded ? (
-          <div className="absolute inset-0 w-full h-full overflow-hidden">
-            <div ref={playerContainerRef} className="relative w-full h-full"></div>
-          </div>
-        ) : (
-          <img 
-            src={banner} 
-            alt={`${title} Banner`} 
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        )}
+        {/* Background image */}
+        <img
+          src={banner}
+          alt={`${title} Banner`}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         
         {/* Mute/Unmute button if video is playing */}
         {data?.trailer?.id && settings.bannertrailer === true && !videoEnded && (
