@@ -41,12 +41,8 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
   const [showShareDropdown, setShowShareDropdown] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [openlist, setOpenlist] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const [muted, setMuted] = useState(!settings?.audio);
   const watchlistDropdownRef = useRef(null);
   const shareDropdownRef = useRef(null);
-  const playerRef = useRef(null);
-  const playerContainerRef = useRef(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Handle click outside of dropdowns
@@ -70,129 +66,7 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
     setOpenlist(!openlist);
   }
 
-  const handleToggleMute = () => {
-    setMuted((prev) => {
-      const newMuted = !prev;
-      if (playerRef.current) {
-        if (newMuted) {
-          playerRef.current.mute();
-        } else {
-          playerRef.current.unMute();
-        }
-      }
-      return newMuted;
-    });
-  };
 
-  // Load YouTube IFrame API
-  useEffect(() => {
-    if (data?.trailer?.id && settings.bannertrailer === true) {
-      if (window.YT) {
-        loadPlayer();
-      } else {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        window.onYouTubeIframeAPIReady = loadPlayer;
-      }
-    }
-  }, [data, settings.bannertrailer]);
-
-  function loadPlayer() {
-    if (data?.trailer?.id && playerContainerRef.current && settings.bannertrailer === true) {
-      // Validate trailer ID format (YouTube video IDs are typically 11 characters)
-      const trailerId = String(data.trailer.id).trim();
-      if (!trailerId || trailerId.length < 5) {
-        console.warn('Invalid trailer ID:', trailerId);
-        setVideoEnded(true);
-        return;
-      }
-      
-      if (playerRef.current) {
-        playerRef.current.destroy();
-      }
-      
-      // Create a div element that will contain the YouTube iframe
-      const playerElement = document.createElement('div');
-      playerElement.id = 'youtube-player-' + Date.now();
-      playerContainerRef.current.innerHTML = ''; // Clear existing content
-      playerContainerRef.current.appendChild(playerElement);
-      
-      // Use larger size to ensure full coverage with no blank spaces
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Make the player slightly larger than the viewport
-      const playerWidth = viewportWidth * 1.2;
-      const playerHeight = viewportHeight * 1.2;
-      
-      playerRef.current = new window.YT.Player(playerElement.id, {
-        videoId: trailerId,
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          loop: 1,
-          playlist: trailerId,
-          disablekb: 1, // Disable keyboard controls
-          fs: 0, // Disable fullscreen button
-        },
-        events: {
-          onReady: (event) => {
-            if (muted) {
-              event.target.mute();
-            } else {
-              event.target.unMute();
-            }
-            
-            // Apply CSS to the iframe to ensure it covers the entire container
-            const iframe = playerContainerRef.current.querySelector('iframe');
-            if (iframe) {
-              iframe.style.position = 'absolute';
-              iframe.style.top = '50%';
-              iframe.style.left = '50%';
-              iframe.style.width = playerWidth + 'px';
-              iframe.style.height = playerHeight + 'px';
-              iframe.style.transform = 'translate(-50%, -50%)';
-              iframe.style.pointerEvents = 'none';
-            }
-          },
-          onStateChange: (event) => {
-            // When video ends (state = 0), set videoEnded to true
-            if (event.data === 0) {
-              setVideoEnded(true);
-            }
-          },
-          onError: () => {
-            setVideoEnded(true);
-          }
-        },
-      });
-      
-      // Handle window resize to maintain full coverage
-      const handleResize = () => {
-        const iframe = playerContainerRef.current?.querySelector('iframe');
-        if (iframe) {
-          const newViewportWidth = window.innerWidth;
-          const newViewportHeight = window.innerHeight;
-          
-          iframe.style.width = (newViewportWidth * 1.2) + 'px';
-          iframe.style.height = (newViewportHeight * 1.2) + 'px';
-        }
-      };
-      
-      window.addEventListener('resize', handleResize);
-      
-      // Clean up event listener when component unmounts or video changes
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }
-  }
 
   // Get anime info from data
   const title = data?.title?.[animetitle] || data?.title?.romaji;
@@ -246,22 +120,7 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
           className="absolute inset-0 w-full h-full object-cover"
         />
         
-        {/* Mute/Unmute button if video is playing */}
-        {data?.trailer?.id && settings.bannertrailer === true && !videoEnded && (
-          <div className="absolute bottom-4 right-4 z-30">
-            <button
-              onClick={handleToggleMute}
-              className="bg-black/60 text-white p-2 rounded-full hover:bg-white/20 transition-colors"
-              aria-label={muted ? 'Unmute' : 'Mute'}
-            >
-              <FontAwesomeIcon
-                icon={muted ? faVolumeMute : faVolumeHigh}
-                className="w-5 h-5"
-              />
-            </button>
-          </div>
-        )}
-        
+                
         {/* Content positioned at bottom left */}
         <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-12 z-20 flex flex-col items-start">
           {/* Title and metadata */}
@@ -403,16 +262,14 @@ function NetflixStyleDetails({ data, id, session, list, setList, url }) {
                 <div className="w-full">
                   {data?.trailer?.id ? (
                     <div className="aspect-video w-full">
-                      <div ref={playerContainerRef} className="relative aspect-video w-full">
-                        <iframe
-                          title="Trailer"
-                          className="w-full h-full"
-                          src={`https://www.youtube.com/embed/${data?.trailer?.id}`}
-                          frameBorder="0"
-                          allowFullScreen
-                          ref={playerRef}
-                        ></iframe>
-                      </div>
+                      <iframe
+                        title="Trailer"
+                        className="w-full h-full"
+                        src={`https://www.youtube.com/embed/${data?.trailer?.id}`}
+                        frameBorder="0"
+                        allowFullScreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      />
                     </div>
                   ) : (
                     <div className="aspect-video w-full flex items-center justify-center bg-[#111]">

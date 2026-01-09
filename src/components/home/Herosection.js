@@ -10,15 +10,11 @@ import { Button, Tooltip } from '@nextui-org/react';
 function Herosection({ data }) {
   const settings = useStore(useSettings, (state) => state.settings);
   const [populardata, setpopulardata] = useState(null);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const [muted, setMuted] = useState(!settings?.audio);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
   const [isAutoSliding, setIsAutoSliding] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const animetitle = useStore(useTitle, (state) => state.animetitle);
-  const playerRef = useRef(null);
-  const playerContainerRef = useRef(null);
   const carouselRef = useRef(null);
   const autoSlideRef = useRef(null);
 
@@ -42,25 +38,18 @@ function Herosection({ data }) {
     getPopular();
   }, [data, currentIndex]);
 
-  // Auto-slide functionality - triggered by video end or timer for images
+  // Auto-slide functionality for image carousel
   useEffect(() => {
     // Remove any existing timer
     if (autoSlideRef.current) {
       clearInterval(autoSlideRef.current);
     }
 
-    // Set up timer for image-only slides or when video is not available
+    // Set up timer for auto-sliding
     if (isAutoSliding && data && data.length > 1) {
-      const hasVideo = populardata?.trailer?.id && settings.herotrailer === true;
-      
-      if (!hasVideo) {
-        // For image-only slides, use a timer
-        autoSlideRef.current = setInterval(() => {
-          setCurrentIndex(prev => (prev + 1) % data.length);
-          setVideoEnded(false);
-          setMuted(!settings?.audio);
-        }, 8000); // 8 seconds for image slides
-      }
+      autoSlideRef.current = setInterval(() => {
+        setCurrentIndex(prev => (prev + 1) % data.length);
+      }, 5000); // 5 seconds per slide
     }
 
     return () => {
@@ -68,139 +57,20 @@ function Herosection({ data }) {
         clearInterval(autoSlideRef.current);
       }
     };
-  }, [isAutoSliding, data, currentIndex, populardata, settings?.herotrailer]);
+  }, [isAutoSliding, data, currentIndex]);
 
-  // Handle video end to trigger next slide
-  useEffect(() => {
-    if (videoEnded && isAutoSliding && data && data.length > 1) {
-      // Clear any existing timer when video ends
-      if (autoSlideRef.current) {
-        clearInterval(autoSlideRef.current);
-      }
-      
-      // Wait a moment after video ends, then slide to next
-      setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % data.length);
-        setVideoEnded(false); // Reset video state for next anime
-        setMuted(!settings?.audio);
-      }, 1000); // 1 second delay after video ends
-    }
-  }, [videoEnded, isAutoSliding, data, settings?.audio]);
-
-  // Load YouTube IFrame API
-  useEffect(() => {
-    console.log('HeroSection: Checking video conditions', {
-      hasTrailer: !!populardata?.trailer?.id,
-      trailerId: populardata?.trailer?.id,
-      herotrailerSetting: settings?.herotrailer,
-      settings: settings
-    });
-
-    if (populardata?.trailer?.id && settings?.herotrailer === true) {
-      console.log('HeroSection: Loading YouTube player for trailer:', populardata.trailer.id);
-      if (window.YT) {
-        loadPlayer();
-      } else {
-        console.log('HeroSection: Loading YouTube API script');
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName("script")[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        window.onYouTubeIframeAPIReady = loadPlayer;
-      }
-    } else {
-      console.log('HeroSection: Video conditions not met, showing image');
-    }
-  }, [populardata, settings?.herotrailer]);
-
-  function loadPlayer() {
-    if (populardata?.trailer?.id && playerContainerRef.current && settings?.herotrailer === true) {
-      if (playerRef.current) {
-        playerRef.current.destroy();
-      }
-      
-      // Create a div element that will contain the actual YouTube iframe
-      const playerElement = document.createElement('div');
-      playerElement.id = 'youtube-player-' + Date.now();
-      playerContainerRef.current.innerHTML = ''; // Clear any existing content
-      playerContainerRef.current.appendChild(playerElement);
-      
-      // Use a much larger size to ensure full coverage with no blank spaces
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // Make the player slightly larger than viewport to ensure coverage while maintaining clarity
-      const playerWidth = viewportWidth * 1.5; // 1.5x viewport width
-      const playerHeight = viewportHeight * 1.5; // 1.5x viewport height
-      
-
-      playerRef.current = new window.YT.Player(playerElement.id, {
-        videoId: populardata.trailer.id,
-        playerVars: {
-          autoplay: 1,
-          mute: 1,
-          controls: 0,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          loop: 1,
-          playlist: populardata.trailer.id,
-          disablekb: 1, // Disable keyboard controls
-          fs: 0, // Disable fullscreen button
-        },
-        events: {
-          onReady: (event) => {
-            if (muted) {
-              event.target.mute();
-            } else {
-              event.target.unMute();
-            }
-            
-            // Apply CSS to the iframe to ensure it covers the entire container
-            const iframe = playerContainerRef.current.querySelector('iframe');
-            if (iframe) {
-              iframe.style.position = 'absolute';
-              iframe.style.top = '50%';
-              iframe.style.left = '50%';
-              iframe.style.width = playerWidth + 'px';
-              iframe.style.height = playerHeight + 'px';
-              iframe.style.transform = 'translate(-50%, -50%)';
-              iframe.style.pointerEvents = 'none';
-              iframe.style.minWidth = '100%';
-              iframe.style.minHeight = '100%';
-            }
-          },
-          onStateChange: (event) => {
-            // When video ends (state = 0), set videoEnded to true
-            if (event.data === 0) {
-              setVideoEnded(true);
-            }
-          },
-          onError: (error) => {
-            console.error('YouTube Player Error:', error);
-            setVideoEnded(true); // Fallback to image if video fails
-          }
-        },
-      });
-    } else {
-      console.warn('Cannot load player: Missing trailer data, container ref, or hero trailer setting');
-      setVideoEnded(true); // Fallback to image if video cannot load
-    }
-  }
-
-  const handleToggleMute = () => {
-    setMuted(prev => {
-      const newMuted = !prev;
-      if (playerRef.current) {
-        if (newMuted) {
-          playerRef.current.mute();
-        } else {
-          playerRef.current.unMute();
-        }
-      }
-      return newMuted;
-    });
+  // Pause auto-slide on hover
+  const handleMouseEnter = () => {
+    setIsAutoSliding(false);
   };
+
+  const handleMouseLeave = () => {
+    setIsAutoSliding(true);
+  };
+
+
+
+
 
   const navigateCarousel = (direction) => {
     setIsNavigating(true);
@@ -210,9 +80,6 @@ function Herosection({ data }) {
       setCurrentIndex(prev => (prev - 1 + (data?.length || 1)) % (data?.length || 1));
     }
     
-    // Reset video state when changing anime
-    setVideoEnded(false);
-    setMuted(!settings?.audio);
     
     // Add a small delay to show transition
     setTimeout(() => {
@@ -238,6 +105,8 @@ function Herosection({ data }) {
     <div 
       ref={carouselRef}
       className={`relative w-full h-screen overflow-hidden bg-black transition-opacity duration-500 ${isNavigating ? 'opacity-70' : 'opacity-100'} mt-0 sm:mt-0 md:mt-0`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Background image */}
       <div className="absolute inset-0 w-full h-full">
@@ -252,14 +121,6 @@ function Herosection({ data }) {
         }
       </div>
       
-      {/* YouTube video container */}
-      {populardata?.trailer?.id && settings?.herotrailer === true && !videoEnded && (
-        <div 
-          ref={playerContainerRef}
-          className="absolute inset-0 w-full h-full z-0"
-          style={{ pointerEvents: 'none' }}
-        />
-      )}
       
       {/* Netflix-style gradient overlays - reduced opacity for clearer background */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-transparent z-10"></div>
@@ -270,7 +131,7 @@ function Herosection({ data }) {
       {/* Content container */}
       <div className="absolute bottom-0 left-0 right-0 z-20 p-4 sm:p-6 md:p-8 lg:p-12 xl:p-20 pb-8 md:w-3/4 lg:w-2/3 xl:w-1/2">
         {/* Netflix-style navigation indicator dots - Centered at Bottom */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-1">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 z-30">
           {data && Array.from({ length: Math.min(data.length, 5) }, (_, i) => (
             <button 
               key={i} 
@@ -284,6 +145,30 @@ function Herosection({ data }) {
             />
           ))}
         </div>
+
+        {/* Navigation Arrows */}
+        {data && data.length > 1 && (
+          <>
+            <button
+              onClick={() => navigateCarousel('prev')}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-30 opacity-0 hover:opacity-100 focus:opacity-100"
+              aria-label="Previous slide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button
+              onClick={() => navigateCarousel('next')}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-30 opacity-0 hover:opacity-100 focus:opacity-100"
+              aria-label="Next slide"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </>
+        )}
         
         {/* Trending badge and maturity rating */}
         <div className="flex items-center justify-between mb-4">
@@ -372,28 +257,6 @@ function Herosection({ data }) {
               Info
             </Button>
           </Link>
-          
-
-          
-          {populardata?.trailer?.id && settings.herotrailer === true && !videoEnded && (
-            <Tooltip content={muted ? "Unmute" : "Mute"}>
-              <Button 
-                isIconOnly
-                onClick={handleToggleMute} 
-                className="bg-gray-800/60 text-white hover:bg-gray-700/80 rounded-full w-10 h-10 flex items-center justify-center border border-white/30"
-              >
-                {muted ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.531V19.94a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.506-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.395C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-                  </svg>
-                )}
-              </Button>
-            </Tooltip>
-          )}
         </div>
         
         {/* Enhanced Genres and additional metadata */}
