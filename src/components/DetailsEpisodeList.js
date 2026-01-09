@@ -263,75 +263,93 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
     setCurrentPage(1); // Reset to first page when searching
   };
   
-  // Toggle mobile filters
-  const toggleMobileFilters = () => {
-    setShowMobileFilters(!showMobileFilters);
-  };
-  
-  // Check if an episode is the next one to watch
-  const isNextEpisode = (episodeNumber) => {
-    return episodeNumber === progress + 1;
-  };
-  
-  // Check if an episode has been watched
-  const isWatched = (episodeNumber) => {
-    return episodeNumber <= progress;
-                  sizes="180px"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {watched && (
-                    <div className="rounded-full bg-black/50 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                      </svg>
-                    </div>
-                  )}
-                  {!watched && (
-                    <div className="rounded-full bg-black/50 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-sm px-2 py-0.5 rounded-md">
-                  EP {episode.number}
-                </div>
-                {isNext && (
-                  <div className="absolute top-2 right-2 bg-white text-black text-xs px-2 py-0.5 rounded-full font-semibold">
-                    Next
-                  </div>
-                )}
-                {episode.isFiller && (
-                  <div className="absolute top-2 right-2 bg-yellow-600 text-white text-xs px-1.5 py-0.5 rounded">
-                    Filler
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#121212]">
-                  <div 
-                    className={`h-full ${watched ? 'bg-white' : 'bg-transparent'}`}
-                    style={{ width: watched ? '100%' : '0%' }}
-                  ></div>
-                </div>
-              </div>
-              <div className="flex flex-col p-3 flex-1">
-                <h3 className="text-sm md:text-base font-medium text-gray-200">{episode.title || `Episode ${episode.number}`}</h3>
-                {episode.description && (
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                    {episode.description}
-                  </p>
-                )}
-              </div>
-            </Link>
-          );
-        })}
       </div>
-    );
-  };
-  
-  // Show empty state or loading indicators
-  if (loading) {
-    return (
+    </div>
+  );
+}
+
+if (data?.type === 'MANGA') {
+  return (
+    <div className="p-6 bg-black rounded-xl text-center">
+      <p className="text-lg font-semibold text-gray-200">Coming Soon!</p>
+      <p className="text-gray-400">Cannot Fetch Manga, Feature Coming Soon.</p>
+    </div>
+  );
+}
+
+if (data?.status === 'NOT_YET_RELEASED') {
+  return (
+    <div className="p-6 bg-black rounded-xl text-center">
+      <p className="text-lg font-semibold text-gray-200">Coming Soon!</p>
+      <p className="text-gray-400">Sorry, this anime isn't out yet. Keep an eye out for updates!</p>
+    </div>
+  );
+}
+
+if (!allEpisodes || allEpisodes.length === 0) {
+  return (
+    <div className="p-6 bg-black rounded-xl text-center">
+      <p className="text-lg font-semibold text-gray-200">No Episodes Available</p>
+      <p className="text-gray-400">This anime is currently unavailable. Check back later for updates!</p>
+    </div>
+  );
+}
+
+return (
+  <div className="bg-black rounded-xl p-4 shadow-lg">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="flex items-center gap-2">
+        <h3 className="font-bold text-lg text-gray-100">Episodes</h3>
+        <Tooltip content="Refresh Episodes">
+          <button 
+            onClick={refreshEpisodes} 
+            className="p-1.5 rounded-full bg-[#121212] hover:bg-[#1a1a1a] transition-colors"
+            disabled={refreshLoading}
+          >
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth="2" 
+              stroke="currentColor" 
+              className={`w-4 h-4 ${refreshLoading ? "animate-spin" : ""}`}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </button>
+        </Tooltip>
+        <span className="text-gray-400 text-sm">{allEpisodes?.length || 0} episodes</span>
+      </div>
+      
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center sm:hidden">
+          <button 
+            onClick={toggleMobileFilters}
+            className="p-1.5 rounded-full bg-[#121212] hover:bg-[#1a1a1a] transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className={`${showMobileFilters ? 'flex' : 'hidden'} sm:flex flex-wrap items-center gap-2`}>
+          <Select
+            aria-label="Provider"
+            selectedKeys={[defaultProvider]}
+            className="w-32 min-w-[8rem]"
+            size="sm"
+            variant="bordered"
+            onChange={handleProviderChange}
+            classNames={{
+              trigger: "bg-[#121212] data-[hover=true]:bg-[#1a1a1a]",
+              popover: "bg-[#121212]"
+            }}
+          >
+            {episodeData?.map((item) => (
+              <SelectItem key={item.providerId} value={item.providerId}>
+                {item.providerId}
+              </SelectItem>
       <div className="p-4 bg-black rounded-xl text-center">
         <div className="animate-pulse">
           <div className="h-10 bg-[#121212] rounded-md w-3/4 mx-auto mb-4"></div>
