@@ -257,16 +257,31 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
     }
   };
   
-  // Handle search input
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page when searching
-  };
-  
-      </div>
-    </div>
-  );
-}
+  // Adjust items per page based on display mode
+  if (mode === 'compact') {
+    setItemsPerPage(50);
+  } else if (mode === 'details') {
+    setItemsPerPage(15);
+  } else {
+    setItemsPerPage(24);
+  }
+};
+
+// Handle search input
+const handleSearch = (e) => {
+  setSearchTerm(e.target.value);
+  setCurrentPage(1); // Reset to first page when searching
+};
+
+// Toggle mobile filters
+const toggleMobileFilters = () => {
+  setShowMobileFilters(!showMobileFilters);
+};
+
+// Check if an episode is the next one to watch
+const isNextEpisode = (episodeNumber) => {
+  return episodeNumber === progress + 1;
+};
 
 if (data?.type === 'MANGA') {
   return (
