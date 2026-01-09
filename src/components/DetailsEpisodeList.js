@@ -155,9 +155,17 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
   useEffect(() => {
     if (!episodeData) return;
     
+    console.log(`🔄 Updating episodes display:`, {
+      episodeData,
+      defaultProvider,
+      subtype,
+      dubCount
+    });
+    
     const provider = episodeData?.find((i) => i.providerId === defaultProvider);
     
     if (!provider) {
+      console.log(`❌ Provider not found: ${defaultProvider}`);
       setAllEpisodes([]);
       return;
     }
@@ -171,11 +179,13 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
     if (hasSubDubStructure) {
       // Handle sub/dub structure (both consumet and non-consumet providers)
       filteredEpisodes = subtype === 'sub' ? provider.episodes?.sub : provider.episodes?.dub;
+      console.log(`📋 Using ${subtype} episodes:`, filteredEpisodes?.length || 0);
     } else {
       // Handle flat array (legacy format)
       filteredEpisodes = subtype === 'dub'
         ? provider.episodes?.slice(0, dubCount) 
         : provider.episodes;
+      console.log(`📋 Using flat array episodes:`, filteredEpisodes?.length || 0);
     }
     
     // Handle sorting direction
@@ -184,6 +194,7 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
       if (sortDirection === 'desc') {
         sortedEpisodes.reverse();
       }
+      console.log(`📋 Final episodes to display:`, sortedEpisodes.length);
       setAllEpisodes(sortedEpisodes);
     }
   }, [episodeData, subtype, defaultProvider, dubCount, sortDirection]);
@@ -265,137 +276,6 @@ function DetailsEpisodeList({ data, id, progress, setUrl }) {
   // Check if an episode has been watched
   const isWatched = (episodeNumber) => {
     return episodeNumber <= progress;
-  };
-  
-  // Render episode grid items
-  const renderGridEpisodes = () => {
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mt-4">
-        {filteredEpisodes.map((episode) => {
-          const isNext = isNextEpisode(episode.number);
-          const watched = isWatched(episode.number);
-          
-          return (
-            <Link
-              href={`/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
-                episode?.id || episode?.episodeId
-              )}&ep=${episode?.number}&type=${subtype}`}
-              key={episode?.id || episode?.episodeId}
-              className={`group flex flex-col relative transition-all duration-300 hover:scale-105 ${
-                isNext ? 'ring-2 ring-white' : ''
-              }`}
-            >
-              <div className="aspect-video relative overflow-hidden rounded-md bg-black">
-                <Image 
-                  src={episode?.image || episode?.img || data?.coverImage?.extraLarge || data?.bannerImage || ''} 
-                  alt={`Episode ${episode.number}`}
-                  fill
-                  className={`object-cover ${watched ? 'opacity-60' : ''}`}
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-2">
-                  <span className="text-white text-sm font-medium">EP {episode.number}</span>
-                </div>
-                {isNext && (
-                  <div className="absolute right-2 top-2 bg-white text-black text-xs px-2 py-0.5 rounded-full font-semibold">
-                    Next
-                  </div>
-                )}
-                {watched && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="relative h-12 w-12 flex items-center justify-center rounded-full bg-white/20">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                {episode.isFiller && (
-                  <div className="absolute bottom-2 right-2 bg-yellow-600 text-white text-xs px-1.5 py-0.5 rounded">
-                    Filler
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#121212]">
-                  <div 
-                    className={`h-full ${watched ? 'bg-white' : 'bg-transparent'}`}
-                    style={{ width: watched ? '100%' : '0%' }}
-                  ></div>
-                </div>
-              </div>
-              <div className="mt-1.5 px-0.5">
-                <h4 className="text-xs sm:text-sm font-medium truncate text-gray-200">
-                  {episode.title || `Episode ${episode.number}`}
-                </h4>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    );
-  };
-  
-  // Render compact episode list
-  const renderCompactEpisodes = () => {
-    return (
-      <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2 mt-4">
-        {filteredEpisodes.map((episode) => {
-          const isNext = isNextEpisode(episode.number);
-          const watched = isWatched(episode.number);
-          
-          return (
-            <Link
-              href={`/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
-                episode?.id || episode?.episodeId
-              )}&ep=${episode?.number}&type=${subtype}`}
-              key={episode?.id || episode?.episodeId}
-            >
-              <div 
-                className={`relative flex items-center justify-center h-10 rounded-md transition ${
-                  isNext 
-                    ? 'bg-white text-black font-semibold' 
-                    : watched
-                      ? 'bg-[#333] text-gray-300'
-                      : episode.isFiller 
-                        ? 'bg-yellow-800/30 hover:bg-yellow-800/50 text-gray-200' 
-                        : 'bg-[#121212] hover:bg-[#1a1a1a] text-gray-300'
-                }`}
-              >
-                <span>{episode.number}</span>
-                {watched && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    );
-  };
-  
-  // Render detailed episode list
-  const renderDetailedEpisodes = () => {
-    return (
-      <div className="flex flex-col gap-3 mt-4">
-        {filteredEpisodes.map((episode) => {
-          const isNext = isNextEpisode(episode.number);
-          const watched = isWatched(episode.number);
-          
-          return (
-            <Link
-              href={`/anime/watch?id=${data?.id}&host=${defaultProvider}&epid=${encodeURIComponent(
-                episode?.id || episode?.episodeId
-              )}&ep=${episode?.number}&type=${subtype}`}
-              key={episode?.id || episode?.episodeId}
-              className={`group flex flex-row transition-all duration-300 hover:bg-[#121212] rounded-xl overflow-hidden ${
-                isNext ? 'ring-1 ring-white' : ''
-              }`}
-            >
-              <div className="relative w-[180px] h-[100px]">
-                <Image 
-                  src={episode?.image || episode?.img || data?.coverImage?.extraLarge || data?.bannerImage || ''} 
-                  alt={`Episode ${episode.number}`}
-                  fill
-                  className={`object-cover ${watched ? 'opacity-70' : ''}`}
                   sizes="180px"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
