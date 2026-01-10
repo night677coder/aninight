@@ -108,3 +108,42 @@ export const UserMangaProfile = async (token, username) => {
     const res = await GraphQlClient(token, usermangaprofile, { username });
     return res.data.MediaListCollection;
 }
+
+export const getRecentAnimeEpisodes = async () => {
+    const recentEpisodesQuery = `
+    query {
+        Page(page: 1, perPage: 20) {
+            media(type: ANIME, status: RELEASING, sort: UPDATED_AT_DESC) {
+                id
+                idMal
+                title {
+                    romaji
+                    english
+                    native
+                }
+                coverImage {
+                    large
+                    medium
+                }
+                episodes
+                nextAiringEpisode {
+                    episode
+                    airingAt
+                }
+                status
+                format
+                genres
+                averageScore
+            }
+        }
+    }
+    `;
+    
+    try {
+        const res = await GraphQlClient(null, recentEpisodesQuery, {});
+        return res?.data?.Page?.media || [];
+    } catch (error) {
+        console.error('Error fetching recent anime episodes:', error);
+        return [];
+    }
+}

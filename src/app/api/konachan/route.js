@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     // Get the URL parameters from the request

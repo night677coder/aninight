@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
 const EXTERNAL_PROXY = 'https://m8u3.thevoidborn001.workers.dev';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);

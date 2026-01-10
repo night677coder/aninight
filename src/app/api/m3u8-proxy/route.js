@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to retry fetch with exponential backoff
 async function fetchWithRetry(url, options, maxRetries = 3) {
   let retries = 0;

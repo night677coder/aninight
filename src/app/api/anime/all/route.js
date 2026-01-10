@@ -1,5 +1,7 @@
 import { AdvancedSearch } from '@/lib/Anilistfunctions';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
