@@ -1,3 +1,6 @@
+<p align="center">
+ <img src="public/placeholder.jpg" alt="Logo" width="400" title="Project Logo">
+</p>
 # 🌙 AniNight
 
 AniNight is a modern anime streaming and manga reading platform that brings anime episodes and manga chapters together in one clean, fast, and responsive experience.
