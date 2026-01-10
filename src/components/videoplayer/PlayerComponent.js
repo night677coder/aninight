@@ -282,7 +282,7 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, server, data, sess
                                     <ServerSelector 
                                         episodeId={epId}
                                         currentServer={currentServer}
-                                        onServerChange={handleServerChange}
+                                        onServerChange={handleServerSwitch}
                                         category={subdub}
                                     />
                                 </div>

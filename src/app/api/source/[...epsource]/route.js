@@ -230,8 +230,9 @@ async function AnimePaheEpisode(animeSession, episodeSession, subtype) {
 }
 
 export const POST = async (req,{params}) => {
-  const id = params.epsource[0];
-  const {source, provider, episodeid, episodenum, subtype, animeSession, episodeSession} = await req.json();
+  try {
+    const id = params.epsource[0];
+    const {source, provider, episodeid, episodenum, subtype, animeSession, episodeSession} = await req.json();
     // let cacheTime = 25 * 60;
     // let cached = await redis.get(`source:${params.epid[0]}`);
 
@@ -257,8 +258,20 @@ export const POST = async (req,{params}) => {
     console.log(`========================================\n`);
     
     if (provider === "animepahe") {
-      const data = await AnimePaheEpisode(animeSession, episodeSession, subtype);
-      return NextResponse.json(data);
+      try {
+        const data = await AnimePaheEpisode(animeSession, episodeSession, subtype);
+        if (!data) {
+          console.log('[SOURCE API] AnimePahe failed, trying Consumet fallback');
+          const fallbackData = await consumetEpisode(episodeid, subtype);
+          return NextResponse.json(fallbackData);
+        }
+        return NextResponse.json(data);
+      } catch (error) {
+        console.error('[SOURCE API] AnimePahe error:', error.message);
+        console.log('[SOURCE API] AnimePahe failed, trying Consumet fallback');
+        const fallbackData = await consumetEpisode(episodeid, subtype);
+        return NextResponse.json(fallbackData);
+      }
     }
     
     if (provider === "hianime") {
@@ -311,4 +324,11 @@ export const POST = async (req,{params}) => {
     console.log('[SOURCE API] No matching source found, trying Consumet as last resort');
     const fallbackData = await consumetEpisode(episodeid, subtype);
     return NextResponse.json(fallbackData);
+  } catch (error) {
+    console.error('[SOURCE API] POST handler error:', error.message);
+    return NextResponse.json(
+      { error: 'Internal server error', message: error.message },
+      { status: 500 }
+    );
+  }
 }
