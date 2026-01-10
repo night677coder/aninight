@@ -11,11 +11,10 @@ async function consumetEpisode(id, subtype) {
       // Use the new URL format with type parameter instead of dub parameter
       const audioType = subtype?.toLowerCase() === 'dub' ? 'dub' : 'sub';
 
-      // Check if API_URI is defined, otherwise use a fallback or throw error
-      const apiUri = process.env.API_URI;
-      if (!apiUri) {
-        console.error('API_URI environment variable is not set');
-        throw new Error('API_URI environment variable is not configured');
+      // Check if API_URI is defined, otherwise use a fallback
+      const apiUri = process.env.API_URI || 'https://api.consumet.org';
+      if (!process.env.API_URI) {
+        console.warn('API_URI environment variable not set, using fallback:', apiUri);
       }
 
       console.log(`[EPISODE ID FORMATTING]`);
@@ -44,7 +43,7 @@ async function consumetEpisode(id, subtype) {
           if (source.isM3U8 || source.url.includes('.m3u8')) {
             return {
               ...source,
-              url: `${process.env.NEXT_PUBLIC_PROXY_URI}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
+              url: `${process.env.NEXT_PUBLIC_PROXY_URI || 'https://aninight.vercel.app'}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
             };
           }
           return source;
@@ -66,7 +65,11 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
       
       // For category, pass 'dub' or 'sub' directly based on subtype
       const category = isDub ? 'dub' : 'sub';
-      const { data } = await axios.get(`${process.env.ZORO_URI}/anime/episode-srcs?id=${cleanEpisodeId}&server=vidstreaming&category=${category}`);
+      const zoroUri = process.env.ZORO_URI || 'https://api.zoro.to';
+      if (!process.env.ZORO_URI) {
+        console.warn('ZORO_URI environment variable not set, using fallback:', zoroUri);
+      }
+      const { data } = await axios.get(`${zoroUri}/anime/episode-srcs?id=${cleanEpisodeId}&server=vidstreaming&category=${category}`);
       
       // Apply m3u8 proxy to sources for CORS handling
       if (data && data.sources) {
@@ -80,7 +83,7 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
           if (source.isM3U8 || source.url.includes('.m3u8')) {
             return {
               ...source,
-              url: `${process.env.NEXT_PUBLIC_PROXY_URI}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
+              url: `${process.env.NEXT_PUBLIC_PROXY_URI || 'https://aninight.vercel.app'}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
             };
           }
           return source;
@@ -121,7 +124,7 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
           if (source.isM3U8 || source.url.includes('.m3u8')) {
             return {
               ...source,
-              url: `${process.env.NEXT_PUBLIC_PROXY_URI}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
+              url: `${process.env.NEXT_PUBLIC_PROXY_URI || 'https://aninight.vercel.app'}/api/m3u8-proxy?url=${encodeURIComponent(source.url)}&headers=${encodeURIComponent(JSON.stringify(headers))}`
             };
           }
           return source;
@@ -138,6 +141,9 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
 async function AnimePaheEpisode(animeSession, episodeSession, subtype) {
   try {
     const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
+    if (!process.env.ANIMEPAHE_BASE_URL) {
+      console.warn('ANIMEPAHE_BASE_URL environment variable not set, using fallback:', ANIMEPAHE_BASE_URL);
+    }
     const EXTERNAL_PROXY = 'https://m8u3.thevoidborn001.workers.dev';
     
     const isDubRequested = subtype?.toLowerCase() === 'dub';
@@ -264,7 +270,7 @@ export const POST = async (req,{params}) => {
       });
       
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/hianime/sources?${params}`,
+        `${process.env.NEXT_PUBLIC_SITE_URL || 'https://aninight.vercel.app'}/api/hianime/sources?${params}`,
         { cache: "no-store" }
       );
       
