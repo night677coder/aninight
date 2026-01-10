@@ -136,6 +136,7 @@ async function AnimeWatch({ params, searchParams }) {
     const epNum = searchParams?.ep;
     const epId = searchParams?.epid;
     const subdub = searchParams?.type;
+    const server = searchParams?.server; // Add server parameter
     const animeSession = searchParams?.session; // For AnimePahe
     
     if (!id) {
@@ -181,6 +182,7 @@ async function AnimeWatch({ params, searchParams }) {
               epNum={epNum} 
               data={data} 
               subdub={subdub} 
+              server={server}
               session={animeSession} 
               savedep={savedep}
             />

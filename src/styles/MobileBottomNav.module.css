@@ -39,6 +39,25 @@
     .navigationContainer {
         display: block;
     }
+
+    .navItem {
+        padding: 8px 4px;
+        min-height: 56px;
+        gap: 4px;
+    }
+
+    .iconWrapper {
+        width: 26px;
+        height: 26px;
+    }
+
+    .icon {
+        font-size: 1.05rem;
+    }
+
+    .text {
+        font-size: 0.65rem;
+    }
 }
 
 .navGrid {
@@ -166,6 +185,36 @@
     font-weight: 700;
 }
 
+@media (max-width: 480px) {
+    .navigationContainer {
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    }
+
+    .navGrid {
+        gap: 3px;
+        padding: 0 3px;
+    }
+
+    .navItem {
+        padding: 7px 3px;
+        min-height: 52px;
+        gap: 4px;
+    }
+
+    .iconWrapper {
+        width: 24px;
+        height: 24px;
+    }
+
+    .icon {
+        font-size: 1rem;
+    }
+
+    .text {
+        font-size: 0.6rem;
+    }
+}
+
 /* Extra small screens */
 @media (max-width: 380px) {
     .navGrid {
@@ -174,21 +223,21 @@
     }
     
     .navItem {
-        padding: 8px 2px;
-        min-height: 60px;
+        padding: 6px 2px;
+        min-height: 48px;
         gap: 4px;
     }
     
     .icon {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
     }
     
     .text {
-        font-size: 0.65rem;
+        font-size: 0.58rem;
     }
     
     .iconWrapper {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
     }
 }

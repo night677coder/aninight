@@ -4,6 +4,7 @@ import { getSources, getEpisodes } from '@/lib/getData';
 import { ProvidersMap } from '@/utils/EpisodeFunctions';
 import PlayerEpisodeList from './PlayerEpisodeList';
 import ArtPlayer from './ArtPlayer';
+import ServerSelector from './ServerSelector';
 import { toast } from 'sonner';
 import { useTitle, useNowPlaying, useDataInfo, useSettings, useSubtype } from '../../lib/store';
 import { useStore } from "zustand";
@@ -13,7 +14,7 @@ import EnhancedEpisodeList from './EnhancedEpisodeList';
 import DownloadButton from './DownloadButton';
 import { useRouter } from 'next-nprogress-bar';
 
-function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, savedep }) {
+function PlayerComponent({ id, epId, provider, epNum, subdub, server, data, session, savedep }) {
     const animetitle = useStore(useTitle, (state) => state.animetitle);
     const settings = useStore(useSettings, (state) => state.settings);
     const subtype = useStore(useSubtype, (state) => state.subtype);
@@ -30,6 +31,7 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
     const [availableProviders, setAvailableProviders] = useState([]);
     const [currentProvider, setCurrentProvider] = useState(provider);
     const [currentSubdub, setCurrentSubdub] = useState(subdub);
+    const [currentServer, setCurrentServer] = useState(server || 'hd-1');
 
     // Fetch available providers on mount
     useEffect(() => {
@@ -126,7 +128,7 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
                     }
                 }
                 
-                const response = await getSources(id, provider, epId, epNum, subdub, null, animeSession, episodeSession);
+                const response = await getSources(id, provider, epId, epNum, subdub, server, animeSession, episodeSession);
 
                 if (!response || (!response.sources && !response.download)) {
                     // Special handling for AnimePahe
@@ -275,6 +277,16 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, data, session, sav
                 <div className='mb-4 relative'>
                     {!loading && !error ? (
                         <div className='h-full w-full aspect-video overflow-hidden rounded-md shadow-lg relative'>
+                            {provider === 'hianime' && (
+                                <div className='absolute top-4 right-4 z-10'>
+                                    <ServerSelector 
+                                        episodeId={epId}
+                                        currentServer={currentServer}
+                                        onServerChange={handleServerChange}
+                                        category={subdub}
+                                    />
+                                </div>
+                            )}
                             <ArtPlayer dataInfo={data} id={id} groupedEp={groupedEp} session={session} savedep={savedep} src={src} subtitles={subtitles} thumbnails={thumbnails} skiptimes={skiptimes} />
                         </div>
                     ) : (

@@ -140,7 +140,7 @@ function Herosection({ data }) {
                 setIsAutoSliding(false); // Pause auto-slide when manually navigating
                 setTimeout(() => setIsAutoSliding(true), 10000); // Resume after 10 seconds
               }}
-              className={`w-2 h-2 sm:w-2 sm:h-2 md:w-2 md:h-2 lg:w-2 lg:h-2 xl:w-2 xl:h-2 max-[640px]:w-1.5 max-[640px]:h-1.5 rounded-full transition-all ${currentIndex === i ? 'bg-white scale-125 max-[640px]:scale-110' : 'bg-white/40'}`}
+              className={`${styles.heroDot} ${currentIndex === i ? styles.heroDotActive : ''}`}
               aria-label={`Show anime ${i + 1}`}
             />
           ))}

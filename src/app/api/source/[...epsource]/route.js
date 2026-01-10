@@ -255,6 +255,27 @@ export const POST = async (req,{params}) => {
       return NextResponse.json(data);
     }
     
+    if (provider === "hianime") {
+      // Use the new HiAnime sources API
+      const params = new URLSearchParams({
+        animeEpisodeId: episodeid,
+        server: server || 'hd-1',
+        category: subtype
+      });
+      
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/hianime/sources?${params}`,
+        { cache: "no-store" }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch HiAnime sources: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return NextResponse.json(data);
+    }
+    
     if (source === "consumet") {
       const data = await consumetEpisode(episodeid, subtype);
       return NextResponse.json(data);

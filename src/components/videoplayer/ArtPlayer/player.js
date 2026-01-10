@@ -252,7 +252,7 @@ function Player({ dataInfo, id, groupedEp, src, session, savedep, subtitles, thu
       volume: 1,
       autoplay: settings?.autoplay || false,
       muted: settings?.audio || false,
-      pip: true,
+      pip: false,
       autoSize: true,
       autoMini: true,
       screenshot: true,

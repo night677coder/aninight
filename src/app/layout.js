@@ -116,7 +116,7 @@ export const metadata = {
     locale: 'en_US',
     images: [
       {
-        url: 'https://night677coder.github.io/aninight/android-chrome-512x512.png',
+        url: 'https://night677coder.github.io/aninight/placeholder.jpg',
         width: 512,
         height: 512,
         alt: 'AniNight Logo',
@@ -127,7 +127,7 @@ export const metadata = {
     card: "summary_large_image",
     title: APP_DEFAULT_TITLE,
     description: APP_DESCRIPTION,
-    images: ['https://night677coder.github.io/aninight/android-chrome-512x512.png'],
+    images: ['https://night677coder.github.io/aninight/placeholder.jpg'],
     creator: '@aninight',
   },
   alternates: {
@@ -226,8 +226,7 @@ export default async function RootLayout({ children }) {
           }}
         />
         
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" href="/luffu.png" />
+        <link rel="icon" type="image/jpeg" href="/placeholder.jpg" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
         <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />

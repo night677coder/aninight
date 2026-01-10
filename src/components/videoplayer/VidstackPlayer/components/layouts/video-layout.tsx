@@ -107,7 +107,6 @@ export function VideoLayout({ groupedEp, thumbnails, subtitles }: VideoLayoutPro
           {/* <Buttons.Download tooltipPlacement='top'/> */}
           <Menus.Settings placement="top end" tooltipPlacement="top end" subtitles={subtitles}/>
           <Buttons.ChromeCast tooltipPlacement='top'/>
-          <Buttons.PIP tooltipPlacement="top" />
           <Buttons.Fullscreen tooltipPlacement="top end" />
         </Controls.Group>
 

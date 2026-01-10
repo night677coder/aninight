@@ -238,3 +238,39 @@
         font-size: 0.95rem;
     }
 }
+
+/* Hero navigation dots */
+.heroDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.heroDotActive {
+    background-color: #ffffff;
+    transform: scale(1.25);
+}
+
+/* Mobile: smaller dots */
+@media (max-width: 640px) {
+    .heroDot {
+        width: 6px;
+        height: 6px;
+    }
+    .heroDotActive {
+        transform: scale(1.1);
+    }
+}
+
+@media (max-width: 480px) {
+    .heroDot {
+        width: 5px;
+        height: 5px;
+    }
+    .heroDotActive {
+        transform: scale(1.2);
+    }
+}
