@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 const HIANIME_API = 'https://aniwatch-api-pi.vercel.app/api/v2/hianime';
 
+export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
