@@ -158,11 +158,19 @@ function PlayerComponent({ id, epId, provider, epNum, subdub, server, data, sess
                     return;
                 }
 
-                const sources = response?.sources?.find(i => i.quality === "default" || i.quality === "auto")?.url || 
-                              response?.sources?.find(i => i.quality === "1080p")?.url || 
-                              response?.sources?.find(i => i.type === "hls")?.url ||
-                              response?.download; // Fallback to download URL if no sources
-                console.log(`Found source URL for ${subdub} episode`);
+                // Extract source URL - handle both string and array cases
+                let sources = null;
+                if (response?.sources && Array.isArray(response.sources)) {
+                    const defaultSource = response.sources.find(i => i.quality === "default" || i.quality === "auto");
+                    const hdSource = response.sources.find(i => i.quality === "1080p");
+                    const hlsSource = response.sources.find(i => i.type === "hls");
+                    
+                    sources = defaultSource?.url || hdSource?.url || hlsSource?.url;
+                } else if (response?.download) {
+                    sources = response.download;
+                }
+                
+                console.log(`Found source URL for ${subdub} episode:`, sources);
                 setSrc(sources);
                 const download = response?.download;
 

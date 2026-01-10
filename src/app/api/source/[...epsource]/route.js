@@ -12,7 +12,7 @@ async function consumetEpisode(id, subtype) {
       const audioType = subtype?.toLowerCase() === 'dub' ? 'dub' : 'sub';
 
       // Check if API_URI is defined, otherwise use a fallback
-      const apiUri = process.env.API_URI || 'https://api.consumet.org';
+      const apiUri = (process.env.API_URI || 'https://api.consumet.org').replace(/\r?\n/g, '').trim();
       if (!process.env.API_URI) {
         console.warn('API_URI environment variable not set, using fallback:', apiUri);
       }
@@ -65,7 +65,7 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
       
       // For category, pass 'dub' or 'sub' directly based on subtype
       const category = isDub ? 'dub' : 'sub';
-      const zoroUri = process.env.ZORO_URI || 'https://api.zoro.to';
+      const zoroUri = (process.env.ZORO_URI || 'https://api.zoro.to').replace(/\r?\n/g, '').trim();
       if (!process.env.ZORO_URI) {
         console.warn('ZORO_URI environment variable not set, using fallback:', zoroUri);
       }
@@ -140,7 +140,7 @@ async function zoroEpisode(provider, episodeid, epnum, id, subtype) {
 
 async function AnimePaheEpisode(animeSession, episodeSession, subtype) {
   try {
-    const ANIMEPAHE_BASE_URL = process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app';
+    const ANIMEPAHE_BASE_URL = (process.env.ANIMEPAHE_BASE_URL || 'https://animepahe-api-iota.vercel.app').replace(/\r?\n/g, '').trim();
     if (!process.env.ANIMEPAHE_BASE_URL) {
       console.warn('ANIMEPAHE_BASE_URL environment variable not set, using fallback:', ANIMEPAHE_BASE_URL);
     }
@@ -231,8 +231,22 @@ async function AnimePaheEpisode(animeSession, episodeSession, subtype) {
 
 export const POST = async (req,{params}) => {
   try {
+    console.log('[SOURCE API] Request received');
+    console.log('[SOURCE API] Params:', params);
+    
     const id = params.epsource[0];
     const {source, provider, episodeid, episodenum, subtype, animeSession, episodeSession} = await req.json();
+    
+    console.log('[SOURCE API] Parsed request data:', {
+      id,
+      source,
+      provider,
+      episodeid,
+      episodenum,
+      subtype,
+      animeSession,
+      episodeSession
+    });
     // let cacheTime = 25 * 60;
     // let cached = await redis.get(`source:${params.epid[0]}`);
 
