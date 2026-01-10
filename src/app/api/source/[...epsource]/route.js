@@ -284,11 +284,21 @@ export const POST = async (req,{params}) => {
     
     if (source === "consumet") {
       const data = await consumetEpisode(episodeid, subtype);
+      if (!data || (!data.sources && !data.download)) {
+        console.log('[SOURCE API] Consumet failed, trying Anify fallback');
+        const fallbackData = await AnifyEpisode('gogoanime', episodeid, episodenum, id, subtype);
+        return NextResponse.json(fallbackData);
+      }
       return NextResponse.json(data);
     }
 
     if (source === "anify" && provider === "zoro") {
       const data = await zoroEpisode(provider, episodeid, episodenum, id, subtype);
+      if (!data || (!data.sources && !data.download)) {
+        console.log('[SOURCE API] Zoro failed, trying Anify fallback');
+        const fallbackData = await AnifyEpisode('zoro', episodeid, episodenum, id, subtype);
+        return NextResponse.json(fallbackData);
+      }
       return NextResponse.json(data);
     }
 
@@ -296,4 +306,9 @@ export const POST = async (req,{params}) => {
       const data = await AnifyEpisode(provider, episodeid, episodenum, id, subtype);
       return NextResponse.json(data);
     }
+
+    // Default fallback if no source matches
+    console.log('[SOURCE API] No matching source found, trying Consumet as last resort');
+    const fallbackData = await consumetEpisode(episodeid, subtype);
+    return NextResponse.json(fallbackData);
 }
